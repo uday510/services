@@ -7,7 +7,7 @@ import com.app.cards.exception.CardAlreadyExistsException;
 import com.app.cards.exception.ResourceNotFoundException;
 import com.app.cards.mapper.CardsMapper;
 import com.app.cards.repository.CardsRepository;
-import com.app.cards.service.ICardsService;
+import com.app.cards.service.ILoansService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +16,7 @@ import java.util.Random;
 
 @Service
 @AllArgsConstructor
-public class CardsServiceImpl implements ICardsService {
+public class LoansServiceImpl implements ILoansService {
 
     private CardsRepository cardsRepository;
 

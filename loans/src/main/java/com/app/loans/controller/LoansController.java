@@ -1,9 +1,9 @@
-package com.app.cards.controller;
+package com.app.loans.controller;
 
-import com.app.cards.dto.CardsDto;
-import com.app.cards.dto.ErrorResponseDto;
-import com.app.cards.dto.SuccessResponseDto;
-import com.app.cards.service.ILoansService;
+import com.app.loans.dto.ErrorResponseDto;
+import com.app.loans.dto.LoansDto;
+import com.app.loans.dto.SuccessResponseDto;
+import com.app.loans.service.ILoansService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,20 +28,19 @@ import java.util.Map;
  */
 
 @Tag(
-        name = "CRUD REST APIs for Cards in Cards Service",
-        description = "CRUD REST APIs in Cards Service to CREATE, UPDATE, FETCH AND DELETE card details"
+        name = "CRUD REST APIs for Cards in Loans Service",
+        description = "CRUD REST APIs in Loans Service to CREATE, UPDATE, FETCH AND DELETE card details"
 )
 @RestController
-@RequestMapping(path = "/api/cards", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(path = "/api/loans", produces = {MediaType.APPLICATION_JSON_VALUE})
 @AllArgsConstructor
 @Validated
-public class CardsController {
+public class LoansController {
 
-    private ILoansService iCardsService;
-
+    private ILoansService iLoansService;
     @Operation(
-            summary = "Create Card REST API",
-            description = "REST API to create new Card inside Cards Service"
+            summary = "Create Loan REST API",
+            description = "REST API to create new Loan inside Loans Service"
     )
     @ApiResponses({
             @ApiResponse(
@@ -59,9 +58,9 @@ public class CardsController {
     )
     @PostMapping
     public ResponseEntity<SuccessResponseDto<String>> createCard(@Valid @RequestParam
-                                                  @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
-                                                  String mobileNumber, HttpServletRequest request) {
-        iCardsService.createCard(mobileNumber);
+                                                                 @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
+                                                                 String mobileNumber, HttpServletRequest request) {
+        iLoansService.createLoan(mobileNumber);
 
         SuccessResponseDto<String> response = SuccessResponseDto.of(
                 request.getRequestURI(),
@@ -74,8 +73,8 @@ public class CardsController {
     }
 
     @Operation(
-            summary = "Fetch Card Details REST API",
-            description = "REST API to fetch card details based on a mobile number"
+            summary = "Fetch Loan Details REST API",
+            description = "REST API to fetch loan details based on a mobile number"
     )
     @ApiResponses({
             @ApiResponse(
@@ -91,24 +90,24 @@ public class CardsController {
             )
     })
     @GetMapping
-    public ResponseEntity<SuccessResponseDto<CardsDto>> fetchCardDetails(@RequestParam
+    public ResponseEntity<SuccessResponseDto<LoansDto>> fetchCardDetails(@RequestParam
                                                      @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
                                                      String mobileNumber, HttpServletRequest request) {
 
-        CardsDto cardsDto = iCardsService.fetchCard(mobileNumber);
+        LoansDto loansDto = iLoansService.fetchLoan(mobileNumber);
 
-        SuccessResponseDto<CardsDto> response = SuccessResponseDto.of(
+        SuccessResponseDto<LoansDto> response = SuccessResponseDto.of(
                 request.getRequestURI(),
                 HttpStatus.OK,
                 HttpStatus.OK.getReasonPhrase(),
-                cardsDto
+                loansDto
         );
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @Operation(
-            summary = "Update Card Details REST API",
+            summary = "Update Loan Details REST API",
             description = "REST API to update card details based on a card number"
     )
     @ApiResponses({
@@ -129,12 +128,12 @@ public class CardsController {
             )
     })
     @PutMapping
-    public ResponseEntity<SuccessResponseDto<Object>> updateCardDetails(@Valid @RequestBody CardsDto cardsDto, HttpServletRequest request) {
+    public ResponseEntity<SuccessResponseDto<Object>> updateCardDetails(@Valid @RequestBody LoansDto loansDto, HttpServletRequest request) {
         Map<String, Object> data = new HashMap<>();
         data.put("status", "updated");
         data.put("success", true);
 
-        iCardsService.updateCard(cardsDto);
+        iLoansService.updateLoad(loansDto);
         SuccessResponseDto<Object> response = SuccessResponseDto.of(
                 request.getRequestURI(),
                 HttpStatus.OK,
@@ -146,7 +145,7 @@ public class CardsController {
     }
 
     @Operation(
-            summary = "Delete Card Details REST API",
+            summary = "Delete Loan REST API",
             description = "REST API to delete Card details based on a mobile number"
     )
     @ApiResponses({
@@ -175,7 +174,7 @@ public class CardsController {
         data.put("status", "deleted");
         data.put("success", true);
 
-        iCardsService.deleteCard(mobileNumber);
+        iLoansService.deleteLoan(mobileNumber);
 
         SuccessResponseDto<Object> response = SuccessResponseDto.of(
                 request.getRequestURI(),

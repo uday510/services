@@ -36,9 +36,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
 
-    @ExceptionHandler(CardAlreadyExistsException.class)
+    @ExceptionHandler(LoanAlreadyExistsException.class)
     public ResponseEntity<ErrorResponseDto> handleCustomerAlreadyExists(
-            CardAlreadyExistsException ex,
+            LoanAlreadyExistsException ex,
             HttpServletRequest request
     ) {
         ErrorResponseDto errorResponse = ErrorResponseDto.of(

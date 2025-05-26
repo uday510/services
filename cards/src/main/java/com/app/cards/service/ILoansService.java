@@ -2,7 +2,7 @@ package com.app.cards.service;
 
 import com.app.cards.dto.CardsDto;
 
-public interface ICardsService {
+public interface ILoansService {
 
     /**
      *

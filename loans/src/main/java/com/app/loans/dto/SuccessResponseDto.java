@@ -1,6 +1,5 @@
 package com.app.loans.dto;
 
-import com.app.accounts.dto.BaseResponseDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
