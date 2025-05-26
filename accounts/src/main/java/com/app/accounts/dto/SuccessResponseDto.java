@@ -1,6 +1,7 @@
 package com.app.accounts.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
@@ -11,9 +12,19 @@ import java.time.OffsetDateTime;
 @Getter
 @ToString(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL) // Don't serialize null fields
+@Schema(
+        name = "SuccessResponse",
+        description = "Schema to hold successful response information"
+)
 public class SuccessResponseDto<T> extends BaseResponseDto {
 
+    @Schema(
+            description = "Data to hold response payload"
+    )
     private final T data;
+    @Schema(
+            description = "Message to hold response message information"
+    )
     private final String message;
 
     @Builder(builderMethodName = "successBuilder", buildMethodName = "create")
