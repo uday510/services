@@ -2,6 +2,9 @@ server:
   port: 8080
 
 spring:
+  web:
+    resources:
+      add-mappings: false
   datasource:
     url: jdbc:h2:mem:testdb
     driverClassName: org.h2.Driver

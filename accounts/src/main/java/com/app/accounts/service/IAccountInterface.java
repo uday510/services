@@ -12,4 +12,8 @@ public interface IAccountInterface {
 
     CustomerDto fetchAccount(String mobileNumber);
 
+    void updateAccount(CustomerDto customerDto);
+
+    void deleteAccount(String mobileNumber);
+
 }
