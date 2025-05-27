@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  accounts:
+    image: "uday510/accounts:latest"
+    container_name: accounts-service
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - micro-net
+    platform: linux/amd64
+
+  loans:
+    image: "uday510/loans:latest"
+    container_name: loans-service
+    ports:
+      - "8090:8090"
+    restart: unless-stopped
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - micro-net
+    platform: linux/amd64
+
+  cards:
+    image: "uday510/cards:latest"
+    container_name: cards-service
+    ports:
+      - "9000:9000"
+    restart: unless-stopped
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - micro-net
+    platform: linux/amd64
+
+networks:
+  micro-net:
+    driver: bridge
