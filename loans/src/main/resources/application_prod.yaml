@@ -1,0 +1,16 @@
+spring:
+  config:
+    activate:
+      on-profile: "prod"
+
+build:
+  version: "1.0"
+
+accounts:
+  message: "Production Environment"
+  contactDetails:
+    name: "prod"
+    email: "prod@email.com"
+  onCallSupport:
+    - (000)000-0012
+    - (000)000-0021

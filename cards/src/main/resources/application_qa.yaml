@@ -1,0 +1,16 @@
+spring:
+  config:
+    activate:
+      on-profile: "qa"
+
+build:
+  version: "2.0"
+
+accounts:
+  message: "QA Environment"
+  contactDetails:
+    name: "QA"
+    email: "qa@email.com"
+  onCallSupport:
+    - (000)000-1234
+    - (000)000-5678

@@ -1,6 +1,9 @@
 server:
   port: 9000
 spring:
+  web:
+    resources:
+      add-mappings: false
   datasource:
     url: jdbc:h2:mem:testdb
     driverClassName: org.h2.Driver
@@ -14,6 +17,22 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  config:
+    import:
+      - "application_qa.yaml"
+      - "application_prod.yaml"
+  profiles:
+    active:
+      - "prod"
 
 build:
-  version:"1.0"
+  version: "3.0"
+
+accounts:
+  message: "Hello, World!"
+  contactDetails:
+    name: "Alan Turing"
+    email: "alan@turing.com"
+  onCallSupport:
+    - (000)000-0000
+    - (000)000-0000
