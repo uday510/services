@@ -23,12 +23,12 @@ spring:
       - "application_prod.yaml"
   profiles:
     active:
-      - "prod"
+      - "qa"
 
 build:
   version: "3.0"
 
-accounts:
+loans:
   message: "Hello, World!"
   contactDetails:
     name: "Alan Turing"

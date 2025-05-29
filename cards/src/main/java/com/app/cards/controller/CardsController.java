@@ -1,5 +1,6 @@
 package com.app.cards.controller;
 
+import com.app.cards.dto.CardsContactInfoDto;
 import com.app.cards.dto.CardsDto;
 import com.app.cards.dto.ErrorResponseDto;
 import com.app.cards.dto.SuccessResponseDto;
@@ -13,7 +14,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,11 +35,28 @@ import java.util.Map;
 )
 @RestController
 @RequestMapping(path = "/api/cards", produces = {MediaType.APPLICATION_JSON_VALUE})
-@AllArgsConstructor
 @Validated
 public class CardsController {
 
-    private ILoansService iCardsService;
+    @Value("${build.version}")
+    private String buildVersion;
+
+    private final ILoansService iCardsService;
+
+    private final Environment environment;
+
+
+    private final CardsContactInfoDto cardsContactInfoDto;
+
+    public CardsController(
+            ILoansService iCardsService,
+            Environment environment,
+            CardsContactInfoDto cardsContactInfoDto
+    ) {
+        this.iCardsService = iCardsService;
+        this.environment = environment;
+        this.cardsContactInfoDto = cardsContactInfoDto;
+    }
 
     @Operation(
             summary = "Create Card REST API",
@@ -182,6 +201,90 @@ public class CardsController {
                 HttpStatus.OK,
                 HttpStatus.OK.getReasonPhrase(),
                 data
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Operation(
+            summary = "Fetch Build Info REST API",
+            description = "REST API to fetch Build information"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @GetMapping("/build-info")
+    public ResponseEntity<SuccessResponseDto<String>> getBuildInfo(HttpServletRequest request) {
+
+        SuccessResponseDto<String> response = SuccessResponseDto.of(
+                request.getRequestURI(),
+                HttpStatus.OK,
+                HttpStatus.OK.getReasonPhrase(),
+                buildVersion
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Operation(
+            summary = "Fetch JAVA Version REST API",
+            description = "REST API to fetch Java version information"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @GetMapping("/java-version")
+    public ResponseEntity<SuccessResponseDto<String>> getJavaVersion(HttpServletRequest request) {
+
+        SuccessResponseDto<String> response = SuccessResponseDto.of(
+                request.getRequestURI(),
+                HttpStatus.OK,
+                HttpStatus.OK.getReasonPhrase(),
+                environment.getProperty("JAVA_HOME")
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Operation(
+            summary = "Fetch Maven Version REST API",
+            description = "REST API to fetch Maven version information"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @GetMapping("/maven-home")
+    public ResponseEntity<SuccessResponseDto<String>> getMavenHome(HttpServletRequest request) {
+
+        SuccessResponseDto<String> response = SuccessResponseDto.of(
+                request.getRequestURI(),
+                HttpStatus.OK,
+                HttpStatus.OK.getReasonPhrase(),
+                environment.getProperty("MAVEN_HOME")
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Operation(
+            summary = "Fetch Contact Info REST API",
+            description = "REST API to fetch Contact info information"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @GetMapping("/contact")
+    public ResponseEntity<SuccessResponseDto<CardsContactInfoDto>> getContactInfo(HttpServletRequest request) {
+
+        SuccessResponseDto<CardsContactInfoDto> response = SuccessResponseDto.of(
+                request.getRequestURI(),
+                HttpStatus.OK,
+                HttpStatus.OK.getReasonPhrase(),
+                cardsContactInfoDto
         );
 
         return ResponseEntity.status(HttpStatus.OK).body(response);

@@ -28,7 +28,7 @@ spring:
 build:
   version: "3.0"
 
-accounts:
+cards:
   message: "Hello, World!"
   contactDetails:
     name: "Alan Turing"

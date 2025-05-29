@@ -6,11 +6,11 @@ spring:
 build:
   version: "1.0"
 
-accounts:
+loans:
   message: "Production Environment"
   contactDetails:
     name: "prod"
-    email: "prod@email.com"
+    email: "prod@loans.com"
   onCallSupport:
     - (000)000-0012
     - (000)000-0021

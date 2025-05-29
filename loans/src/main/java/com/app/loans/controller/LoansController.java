@@ -1,6 +1,7 @@
 package com.app.loans.controller;
 
 import com.app.loans.dto.ErrorResponseDto;
+import com.app.loans.dto.LoansContactInfoDto;
 import com.app.loans.dto.LoansDto;
 import com.app.loans.dto.SuccessResponseDto;
 import com.app.loans.service.ILoansService;
@@ -13,7 +14,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,11 +35,28 @@ import java.util.Map;
 )
 @RestController
 @RequestMapping(path = "/api/loans", produces = {MediaType.APPLICATION_JSON_VALUE})
-@AllArgsConstructor
 @Validated
 public class LoansController {
 
-    private ILoansService iLoansService;
+    @Value("${build.version}")
+    private String buildVersion;
+
+    private final ILoansService iLoansService;
+
+    private final Environment environment;
+
+    private final LoansContactInfoDto loansContactInfoDto;
+
+    public LoansController(
+            ILoansService iLoansService,
+            Environment environment,
+            LoansContactInfoDto loansContactInfoDto
+    ) {
+        this.iLoansService = iLoansService;
+        this.environment = environment;
+        this.loansContactInfoDto = loansContactInfoDto;
+    }
+
     @Operation(
             summary = "Create Loan REST API",
             description = "REST API to create new Loan inside Loans Service"
@@ -181,6 +200,90 @@ public class LoansController {
                 HttpStatus.OK,
                 HttpStatus.OK.getReasonPhrase(),
                 data
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Operation(
+            summary = "Fetch Build Info REST API",
+            description = "REST API to fetch Build information"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @GetMapping("/build-info")
+    public ResponseEntity<SuccessResponseDto<String>> getBuildInfo(HttpServletRequest request) {
+
+        SuccessResponseDto<String> response = SuccessResponseDto.of(
+                request.getRequestURI(),
+                HttpStatus.OK,
+                HttpStatus.OK.getReasonPhrase(),
+                buildVersion
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Operation(
+            summary = "Fetch JAVA Version REST API",
+            description = "REST API to fetch Java version information"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @GetMapping("/java-version")
+    public ResponseEntity<SuccessResponseDto<String>> getJavaVersion(HttpServletRequest request) {
+
+        SuccessResponseDto<String> response = SuccessResponseDto.of(
+                request.getRequestURI(),
+                HttpStatus.OK,
+                HttpStatus.OK.getReasonPhrase(),
+                environment.getProperty("JAVA_HOME")
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Operation(
+            summary = "Fetch Maven Version REST API",
+            description = "REST API to fetch Maven version information"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @GetMapping("/maven-home")
+    public ResponseEntity<SuccessResponseDto<String>> getMavenHome(HttpServletRequest request) {
+
+        SuccessResponseDto<String> response = SuccessResponseDto.of(
+                request.getRequestURI(),
+                HttpStatus.OK,
+                HttpStatus.OK.getReasonPhrase(),
+                environment.getProperty("MAVEN_HOME")
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Operation(
+            summary = "Fetch Contact Info REST API",
+            description = "REST API to fetch Contact info information"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @GetMapping("/contact")
+    public ResponseEntity<SuccessResponseDto<LoansContactInfoDto>> getContactInfo(HttpServletRequest request) {
+
+        SuccessResponseDto<LoansContactInfoDto> response = SuccessResponseDto.of(
+                request.getRequestURI(),
+                HttpStatus.OK,
+                HttpStatus.OK.getReasonPhrase(),
+                loansContactInfoDto
         );
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
