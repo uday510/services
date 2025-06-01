@@ -3,11 +3,11 @@ server:
 
 spring:
   application:
-    name: cards
+    name: "cards"
   profiles:
-    active: prod
+    active: "prod"
   config:
-    import: "optional:configserver:http://localhost:8071/"
+    import: "optional:configserver:http://localhost:8071"
 
   datasource:
     url: jdbc:h2:mem:testdb
