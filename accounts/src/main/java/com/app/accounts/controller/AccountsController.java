@@ -1,7 +1,7 @@
 package com.app.accounts.controller;
 
 import com.app.accounts.dto.*;
-import com.app.accounts.service.IAccountInterface;
+import com.app.accounts.service.IAccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -31,9 +31,9 @@ import java.util.Map;
 @Validated
 public class AccountsController {
 
-    private final IAccountInterface iAccountInterface;
+    private final IAccountService iAccountService;
 
-    @Value("${build.version:unknown}")
+    @Value("${build.version}")
     private String buildVersion;
 
     private final Environment environment;
@@ -42,14 +42,14 @@ public class AccountsController {
 
     public AccountsController(
 
-            IAccountInterface iAccountInterface,
+            IAccountService iAccountService,
             Environment environment,
-            AccountsContactInfoDto accountsContactInfoDto) {
+            AccountsContactInfoDto accountsContactInfoDto
+    ) {
 
-        this.iAccountInterface = iAccountInterface;
+        this.iAccountService = iAccountService;
         this.environment = environment;
         this.accountsContactInfoDto = accountsContactInfoDto;
-
     }
 
     @Operation(
@@ -67,7 +67,7 @@ public class AccountsController {
             @RequestBody CustomerDto customerDto,
             HttpServletRequest request
     ) {
-        iAccountInterface.createAccount(customerDto);
+        iAccountService.createAccount(customerDto);
 
         SuccessResponseDto<String> response = SuccessResponseDto.of(
                 request.getRequestURI(),
@@ -93,7 +93,7 @@ public class AccountsController {
                                                                             @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
                                                                             String mobileNumber, HttpServletRequest request) {
 
-        CustomerDto customerDto = iAccountInterface.fetchAccount(mobileNumber);
+        CustomerDto customerDto = iAccountService.fetchAccount(mobileNumber);
 
         SuccessResponseDto<CustomerDto> response = SuccessResponseDto.of(
           request.getRequestURI(),
@@ -129,7 +129,7 @@ public class AccountsController {
         data.put("status", "updated");
         data.put("success", true);
 
-        iAccountInterface.updateAccount(dto);
+        iAccountService.updateAccount(dto);
         SuccessResponseDto<Object> response = SuccessResponseDto.of(
                 request.getRequestURI(),
                 HttpStatus.OK,
@@ -164,7 +164,7 @@ public class AccountsController {
         data.put("status", "deleted");
         data.put("success", true);
 
-        iAccountInterface.deleteAccount(mobileNumber);
+        iAccountService.deleteAccount(mobileNumber);
 
         SuccessResponseDto<Object> response = SuccessResponseDto.of(
                 request.getRequestURI(),

@@ -2,7 +2,7 @@ package com.app.accounts.service;
 
 import com.app.accounts.dto.CustomerDto;
 
-public interface IAccountInterface {
+public interface IAccountService {
     /**
      *
      * @param customerDto - CustomerRequestDTO

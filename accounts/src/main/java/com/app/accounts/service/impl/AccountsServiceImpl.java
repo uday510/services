@@ -11,7 +11,7 @@ import com.app.accounts.mapper.AccountMapper;
 import com.app.accounts.mapper.CustomerMapper;
 import com.app.accounts.repository.AccountsRepository;
 import com.app.accounts.repository.CustomerRepository;
-import com.app.accounts.service.IAccountInterface;
+import com.app.accounts.service.IAccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +20,7 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
-public class AccountsServiceImpl implements IAccountInterface {
+public class AccountsServiceImpl implements IAccountService {
 
     private final AccountsRepository accountsRepository;
     private final CustomerRepository customerRepository;
