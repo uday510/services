@@ -1,8 +1,6 @@
 package com.app.accounts.controller;
 
-import com.app.accounts.dto.CustomerDto;
-import com.app.accounts.dto.ErrorResponseDto;
-import com.app.accounts.dto.SuccessResponseDto;
+import com.app.accounts.dto.*;
 import com.app.accounts.service.IAccountInterface;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,12 +11,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,10 +29,28 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/api/accounts", produces = {MediaType.APPLICATION_JSON_VALUE})
 @Validated
-@AllArgsConstructor
 public class AccountsController {
 
-    private IAccountInterface iAccountInterface;
+    private final IAccountInterface iAccountInterface;
+
+    @Value("${build.version:unknown}")
+    private String buildVersion;
+
+    private final Environment environment;
+
+    private final AccountsContactInfoDto accountsContactInfoDto;
+
+    public AccountsController(
+
+            IAccountInterface iAccountInterface,
+            Environment environment,
+            AccountsContactInfoDto accountsContactInfoDto) {
+
+        this.iAccountInterface = iAccountInterface;
+        this.environment = environment;
+        this.accountsContactInfoDto = accountsContactInfoDto;
+
+    }
 
     @Operation(
             summary = "Create Account REST API",
@@ -154,6 +171,90 @@ public class AccountsController {
                 HttpStatus.OK,
                 HttpStatus.OK.getReasonPhrase(),
                 data
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Operation(
+            summary = "Fetch Build Info REST API",
+            description = "REST API to fetch Build information"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @GetMapping("/build-info")
+    public ResponseEntity<SuccessResponseDto<String>> getBuildInfo(HttpServletRequest request) {
+
+        SuccessResponseDto<String> response = SuccessResponseDto.of(
+                request.getRequestURI(),
+                HttpStatus.OK,
+                HttpStatus.OK.getReasonPhrase(),
+                buildVersion
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Operation(
+            summary = "Fetch JAVA Version REST API",
+            description = "REST API to fetch Java version information"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @GetMapping("/java-version")
+    public ResponseEntity<SuccessResponseDto<String>> getJavaVersion(HttpServletRequest request) {
+
+        SuccessResponseDto<String> response = SuccessResponseDto.of(
+                request.getRequestURI(),
+                HttpStatus.OK,
+                HttpStatus.OK.getReasonPhrase(),
+                environment.getProperty("JAVA_HOME")
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Operation(
+            summary = "Fetch Maven Version REST API",
+            description = "REST API to fetch Maven version information"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @GetMapping("/maven-home")
+    public ResponseEntity<SuccessResponseDto<String>> getMavenHome(HttpServletRequest request) {
+
+        SuccessResponseDto<String> response = SuccessResponseDto.of(
+                request.getRequestURI(),
+                HttpStatus.OK,
+                HttpStatus.OK.getReasonPhrase(),
+                environment.getProperty("MAVEN_HOME")
+        );
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Operation(
+            summary = "Fetch Contact Info REST API",
+            description = "REST API to fetch Contact info information"
+    )
+    @ApiResponse(
+            responseCode = "200",
+            description = "HTTP Status OK"
+    )
+    @GetMapping("/contact")
+    public ResponseEntity<SuccessResponseDto<AccountsContactInfoDto>> getContactInfo(HttpServletRequest request) {
+
+        SuccessResponseDto<AccountsContactInfoDto> response = SuccessResponseDto.of(
+                request.getRequestURI(),
+                HttpStatus.OK,
+                HttpStatus.OK.getReasonPhrase(),
+                accountsContactInfoDto
         );
 
         return ResponseEntity.status(HttpStatus.OK).body(response);

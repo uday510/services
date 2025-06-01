@@ -1,0 +1,11 @@
+build:
+  version: "1.0"
+
+loans:
+  message: "Production Environment"
+  contactDetails:
+    name: "prod"
+    email: "prod@loans.com"
+  onCallSupport:
+    - (000)000-0012
+    - (000)000-0021

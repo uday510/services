@@ -1,0 +1,11 @@
+build:
+  version: "1.0"
+
+cards:
+  message: "Production Environment"
+  contactDetails:
+    name: "prod"
+    email: "prod@cards.com"
+  onCallSupport:
+    - (000)000-0012
+    - (000)000-0021
