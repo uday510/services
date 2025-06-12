@@ -1,5 +1,17 @@
 services:
 
+  accountsdb:
+  image: mysql
+  container_name: accountsdb
+  ports:
+  - 3306:3306
+  healthcheck:
+    test: ["CMD","mysqladmin","ping","-h","localhost"]
+    timeout: 10s
+    retries: 10
+    interval: 10s
+    start_period: 
+
   rabbitmq:
     image: rabbitmq:3.13-management
     hostname: rabbitmq

@@ -5,6 +5,8 @@ spring:
   application:
     name: "accounts"
 
+    
+
   profiles:
     active: "default"
 
