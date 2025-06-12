@@ -36,3 +36,25 @@ management:
     web:
       exposure:
         include: "*"
+  info:
+    env:
+      enabled: true
+
+endpoints:
+  shutdown: 
+    enabled: true
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetchRegistry: false
+    registerWithEureka: true
+    serviceUrl:
+      defaultZone: http://localhost:8070/eureka/
+
+info:
+  app:
+    name: "loans"
+    description: "Loans Service"
+    version: "1.0.0"
