@@ -16,6 +16,19 @@ services:
   microservice-configservice-config:
     extends:
       service: microservice-base-config
+    depends_on:
+      - configserver
     environment:
       SPRING_PROFILES_ACTIVE: default
       SPRING_CONFIG_IMPORT: configserver:http://configserver:8071
+
+  microservice-eureka-config:
+    extends:
+      service: microservice-base-config
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka
+
