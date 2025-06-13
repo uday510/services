@@ -2,7 +2,6 @@ package com.app.accounts.exception;
 
 import com.app.accounts.dto.ErrorResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.boot.context.properties.bind.validation.ValidationErrors;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;

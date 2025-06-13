@@ -76,7 +76,7 @@ public class LoansController {
     }
     )
     @PostMapping
-    public ResponseEntity<SuccessResponseDto<String>> createCard(@Valid @RequestParam
+    public ResponseEntity<SuccessResponseDto<String>> createLoan(@Valid @RequestParam
                                                                  @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
                                                                  String mobileNumber, HttpServletRequest request) {
         iLoansService.createLoan(mobileNumber);
@@ -108,8 +108,9 @@ public class LoansController {
                     )
             )
     })
+
     @GetMapping
-    public ResponseEntity<SuccessResponseDto<LoansDto>> fetchCardDetails(@RequestParam
+    public ResponseEntity<SuccessResponseDto<LoansDto>> fetchLoanDetails(@RequestParam
                                                      @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
                                                      String mobileNumber, HttpServletRequest request) {
 
@@ -147,7 +148,7 @@ public class LoansController {
             )
     })
     @PutMapping
-    public ResponseEntity<SuccessResponseDto<Object>> updateCardDetails(@Valid @RequestBody LoansDto loansDto, HttpServletRequest request) {
+    public ResponseEntity<SuccessResponseDto<Object>> updateLoanDetails(@Valid @RequestBody LoansDto loansDto, HttpServletRequest request) {
         Map<String, Object> data = new HashMap<>();
         data.put("status", "updated");
         data.put("success", true);
@@ -185,7 +186,7 @@ public class LoansController {
             )
     })
     @DeleteMapping
-    public ResponseEntity<SuccessResponseDto<Object>> deleteAccount (@RequestParam
+    public ResponseEntity<SuccessResponseDto<Object>> deleteLoanAccount(@RequestParam
                                                                      @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits")
                                                                      String mobileNumber,
                                                                      HttpServletRequest request) {
