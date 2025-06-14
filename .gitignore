@@ -1,2 +1,67 @@
-.idea
+# ====================================
+# OS-Specific Files
+# ====================================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# ====================================
+# Editor/IDE Files
+# ====================================
+.vscode/
+*.code-workspace
+
+# ====================================
+# Maven Build Output
+# ====================================
+cards/target/
+accounts/target/
+config-server/target/
+eureka-server/target/
+loans/target/
+
+# Maven project metadata (Eclipse/IDEA)
+cards/.classpath
+cards/.project
+cards/.settings/
+accounts/.classpath
+accounts/.project
+accounts/.settings/
+config-server/.classpath
+config-server/.project
+config-server/.settings/
+eureka-server/.classpath
+eureka-server/.project
+eureka-server/.settings/
+loans/.classpath
+loans/.project
+loans/.settings/
+
+# ====================================
+# Logs and Temporary Files
+# ====================================
+*.log
+*.tmp
+*.bak
+*.swp
+*.out
+*.err
+*~
+
+# ====================================
+# Environment Files
+# ====================================
 .env
+docker-compose/.env
+docker-compose/*.log
+
+# ====================================
+# Jib Cache (optional, if using custom output path)
+**/jib-cache/
+
+# ====================================
+# Keep Maven Wrapper in Version Control
+# ====================================
+!mvnw
+!mvnw.cmd
+!.mvn/

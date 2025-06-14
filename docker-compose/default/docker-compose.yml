@@ -83,6 +83,8 @@ services:
     container_name: eureka-server
     ports:
       - "8070:8070"
+    depends_on:
+      - configserver
     environment:
       SPRING_APPLICATION_NAME: "eureka-server"
     healthcheck:
@@ -93,7 +95,7 @@ services:
       start_period: 10s
     extends:
       file: common-config.yml
-      service: microservice-eureka-config
+      service: microservice-configservice-config
 
   accounts:
     image: "uday510/accounts:latest"

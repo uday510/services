@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.app</groupId>
-    <artifactId>eureka-sever</artifactId>
+    <artifactId>eureka-server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>eureka-sever</name>
-    <description>eureka-sever</description>
+    <name>eureka-server</name>
+    <description>eureka-server</description>
     <url/>
     <licenses>
         <license/>
@@ -69,11 +69,15 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                <release>21</release>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <release>21</release>
-                </configuration>
             </plugin>
 
             <plugin>
@@ -85,7 +89,7 @@
                         <image>eclipse-temurin:21-jdk-jammy</image>
                         <platforms>
                             <platform>
-                                <architecture>arm64</architecture>
+                                <architecture>amd64</architecture>
                                 <os>linux</os>
                             </platform>
                         </platforms>
