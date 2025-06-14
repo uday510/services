@@ -8,7 +8,8 @@ spring:
   profiles:
     active: "default"
   datasource:
-    url: jdbc:mysql://localhost:3308/cardsdb
+    # url: jdbc:mysql://localhost:3308/cardsdb
+    url: jdbc:mysql://cards-db:3306/cardsdb
     username: root
     password: root
 
@@ -22,7 +23,8 @@ spring:
       mode: always 
 
   config:
-    import: "optional:configserver:http://localhost:8071"
+    import: "optional:configserver:http://config-server:8071"
+    # import: "optional:configserver:http://localhost:8071"
 
   rabbitmq:
     host: localhost
@@ -53,7 +55,8 @@ eureka:
     fetchRegistry: false
     registerWithEureka: true
     serviceUrl:
-      defaultZone: "http://localhost:8070/eureka"
+      # defaultZone: "http://localhost:8070/eureka"
+      defaultZone: "http://eureka-server:8070/eureka"
 
 
 info:
