@@ -1,7 +1,7 @@
 services:
   network-deploy-service:
     networks:
-      - micro-net
+      - micro-network
 
   microservice-base-config:
     extends:
@@ -16,11 +16,18 @@ services:
   microservice-configservice-config:
     extends:
       service: microservice-base-config
-    depends_on:
-      - configserver
-      - eurekaserver 
-
     environment:
       SPRING_PROFILES_ACTIVE: qa
       SPRING_CONFIG_IMPORT: configserver:http://configserver:8071
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka
+
+  microservice-eureka-config:
+    extends:
+      service: microservice-base-config
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka
+

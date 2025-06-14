@@ -1,45 +1,10 @@
-version: "3.8"
-
 services:
-
-  accountsdb:
-    image: mysql
-    container_name: accountsdb
-    ports:
-      - "3306:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: accountsdb
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 10s
-      retries: 10
-      interval: 10s
-      start_period: 30s
-
-  rabbitmq:
-    image: rabbitmq:3.13-management
-    hostname: rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    healthcheck:
-      test: ["CMD-SHELL", "rabbitmq-diagnostics check_port_connectivity || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-      start_period: 5s
-    extends:
-      file: common-config.yml
-      service: network-deploy-service
 
   configserver:
     image: "uday510/config-server:latest"
     container_name: config-server
     ports:
       - "8071:8071"
-    depends_on:
-      - rabbitmq
     healthcheck:
       test: "curl --fail --silent localhost:8071/actuator/health/readiness | grep UP || exit 1"
       interval: 10s
@@ -55,6 +20,9 @@ services:
     container_name: eureka-server
     ports:
       - "8070:8070"
+    depends_on:
+      configserver:
+        condition: service_healthy
     environment:
       SPRING_APPLICATION_NAME: "eureka-server"
     healthcheck:
@@ -65,16 +33,19 @@ services:
       start_period: 10s
     extends:
       file: common-config.yml
-      service: microservice-eureka-config
+      service: microservice-configservice-config
 
   accounts:
     image: "uday510/accounts:latest"
-    container_name: "accounts-service"
-    hostname: "accounts-service"
+    container_name: accounts-service
+    hostname: accounts-service
     ports:
       - "8080:8080"
     environment:
       SPRING_APPLICATION_NAME: "accounts"
+    depends_on:
+      eurekaserver:
+        condition: service_healthy
     extends:
       file: common-config.yml
       service: microservice-configservice-config
@@ -86,6 +57,9 @@ services:
       - "9000:9000"
     environment:
       SPRING_APPLICATION_NAME: "cards"
+    depends_on:
+      eurekaserver:
+        condition: service_healthy
     extends:
       file: common-config.yml
       service: microservice-configservice-config
@@ -97,10 +71,13 @@ services:
       - "8090:8090"
     environment:
       SPRING_APPLICATION_NAME: "loans"
+    depends_on:
+      eurekaserver:
+        condition: service_healthy
     extends:
       file: common-config.yml
       service: microservice-configservice-config
 
 networks:
-  micro-net:
-    driver: bridge
+  micro-network:
+    external: true
