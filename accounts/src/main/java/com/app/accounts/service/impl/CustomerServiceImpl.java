@@ -45,16 +45,22 @@ public class CustomerServiceImpl implements ICustomerService  {
     CustomerDetailsDto customerDetailsDto = CustomerMapper.mapToCustomerDetailsDto(customer,
         new CustomerDetailsDto());
 
+    System.out.println("48 :: " + customerDetailsDto.getEmail());
+
     customerDetailsDto.setAccountsDto(AccountMapper.mapToAccountsDto(accounts, new AccountsDto()));
     ResponseEntity<SuccessResponseDto<LoansDto>> loanDetails = loansFeignClient.fetchLoanDetails(mobileNumber);
     if (loanDetails == null || loanDetails.getBody() == null) throw new Exception("LOAN DETAILS ::: ");
     
+    System.out.println("54 :: " + loanDetails.getBody().getApiPath());
     customerDetailsDto.setLoansDto(loanDetails.getBody().getData());
+    System.out.println("55 :: " + loanDetails.getBody().getApiPath());
 
     ResponseEntity<SuccessResponseDto<CardsDto>> cardDetails = cardsFeignClient.fetchCardDetails(mobileNumber);
     if (cardDetails == null || cardDetails.getBody() == null) throw new Exception("CARDS DETAILS ::: ");
+    System.out.println("60 :: " + cardDetails.getBody().getApiPath());
 
     customerDetailsDto.setCardsDto(cardDetails.getBody().getData());
+    System.out.println("63 :: " + cardDetails.getBody().getApiPath());
     
     return customerDetailsDto;
   }
