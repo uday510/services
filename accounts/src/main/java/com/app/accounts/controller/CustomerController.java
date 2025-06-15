@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,8 @@ import com.app.accounts.service.ICustomerService;
 @AllArgsConstructor
 public class CustomerController {
 
+  private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
+
   private final ICustomerService iCustomerService;
 
     @Operation(
@@ -40,12 +44,16 @@ public class CustomerController {
     )
          
   @GetMapping
-  public ResponseEntity<SuccessResponseDto<CustomerDetailsDto>> fetchCustomerDetails(   @RequestParam
+  public ResponseEntity<SuccessResponseDto<CustomerDetailsDto>> fetchCustomerDetails(
+                                                                            @RequestHeader("app-correlation-id") String correlationId,
+                                                                            @RequestParam
                                                                             @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
                                                                             String mobileNumber, HttpServletRequest request) throws Exception
                                                                             {
-    
-    CustomerDetailsDto customerDetailsDto = iCustomerService.fetcCustomerDetailsDto(mobileNumber);
+
+    logger.debug("Correlation Id Found: {}", correlationId);
+
+    CustomerDetailsDto customerDetailsDto = iCustomerService.fetchCustomerDetailsDto(correlationId, mobileNumber);
     SuccessResponseDto<CustomerDetailsDto> response = SuccessResponseDto.of(
           request.getRequestURI(),
                 HttpStatus.OK,

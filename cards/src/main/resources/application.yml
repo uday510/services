@@ -63,3 +63,9 @@ info:
     name: "cards"
     description: "Cards Service"
     version: "1.0.0"
+
+logging:
+  level:
+    com:
+      app:
+        cards: DEBUG

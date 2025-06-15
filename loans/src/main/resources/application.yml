@@ -61,3 +61,9 @@ info:
     name: "loans"
     description: "Loans Service"
     version: "1.0.0"
+
+logging:
+  level:
+    com:
+      app:
+        loans: DEBUG
