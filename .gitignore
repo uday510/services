@@ -65,3 +65,13 @@ docker-compose/*.log
 !mvnw
 !mvnw.cmd
 !.mvn/
+
+/.idea
+
+/.vscode
+
+/.env
+
+/config-server/.env
+/config-server/mvnw
+/config-server/mvnw.cmd
