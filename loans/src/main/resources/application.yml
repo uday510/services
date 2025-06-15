@@ -9,8 +9,8 @@ spring:
     active: "default"
 
   datasource:
-    url: jdbc:mysql://localhost:3307/loansdb
-    # url: jdbc:mysql://loans-db:3306/loansdb
+    # url: jdbc:mysql://localhost:3307/loansdb
+    url: jdbc:mysql://loans-db:3306/loansdb
     username: root
     password: root
 
@@ -24,8 +24,8 @@ spring:
       mode: always 
 
   config:
-    # import: "optional:configserver:http://config-server:8071"
-    import: "optional:configserver:http://localhost:8071"
+    import: "optional:configserver:http://config-server:8071"
+    # import: "optional:configserver:http://localhost:8071"
 
   rabbitmq:
     host: localhost
@@ -53,8 +53,8 @@ eureka:
     fetchRegistry: true
     registerWithEureka: true
     serviceUrl:
-      defaultZone: "http://localhost:8070/eureka"
-      # defaultZone: "http://eureka-server:8070/eureka"
+      # defaultZone: "http://localhost:8070/eureka"
+      defaultZone: "http://eureka-server:8070/eureka"
 
 info:
   app:
