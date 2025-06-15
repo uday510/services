@@ -17,7 +17,6 @@ import java.util.UUID;
 public class RequestTraceFilter implements GlobalFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(RequestTraceFilter.class);
-    private static final String CORRELATION_ID = FilterUtility.CORRELATION_ID;
 
     @Autowired
     private FilterUtility filterUtility;

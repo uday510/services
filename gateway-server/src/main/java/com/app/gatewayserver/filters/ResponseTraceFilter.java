@@ -25,8 +25,12 @@ public class ResponseTraceFilter {
                             HttpHeaders httpHeaders = exchange.getRequest().getHeaders();
                             String correlationId = filterUtility.getCorrelationId(httpHeaders);
 
-                            logger.info("Outgoing response for URI: {} with Correlation ID: {}",
-                                    exchange.getRequest().getURI(), correlationId);
+                                    logger.info("Outgoing response [{}] {} with Correlation ID: {}",
+                                    exchange.getRequest().getMethod(),
+                                    exchange.getRequest().getURI(),
+                                    correlationId);
+
+                            exchange.getResponse().getHeaders().add(filterUtility.CORRELATION_ID, correlationId);
 
                         })
                 );
