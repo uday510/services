@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: "loans-service"
+    name: "loans"
 
   profiles:
     active: "default"

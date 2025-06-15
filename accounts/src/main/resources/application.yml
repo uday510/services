@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: "accounts-service"
+    name: "accounts"
 
   profiles:
     active: "default"
