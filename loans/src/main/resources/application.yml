@@ -6,7 +6,7 @@ spring:
     name: "loans"
 
   profiles:
-    active: "default"
+    active: "prod"
 
   datasource:
     url: jdbc:mysql://localhost:3307/loansdb
