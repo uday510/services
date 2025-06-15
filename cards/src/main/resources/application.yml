@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: "cards"
+    name: "cards-service"
 
   profiles:
     active: "default"
