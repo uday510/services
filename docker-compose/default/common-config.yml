@@ -9,7 +9,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512m
+          memory: 2048m
     environment:
       SPRING_RABBITMQ_HOST: "rabbitmq"
 
@@ -24,10 +24,5 @@ services:
   microservice-eureka-config:
     extends:
       service: microservice-base-config
-    deploy:
-      resources:
-        limits:
-          memory: 512m
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eurekaserver:8070/eureka
-

@@ -114,11 +114,14 @@ public class LoansController {
     })
 
     @GetMapping
-    public ResponseEntity<SuccessResponseDto<LoansDto>> fetchLoanDetails(@RequestParam
+    public ResponseEntity<SuccessResponseDto<LoansDto>> fetchLoanDetails(
                                                      @RequestHeader("app-correlation-id") String correlationId,
+                                                     @RequestParam
                                                      @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
                                                      String mobileNumber, HttpServletRequest request) {
 
+
+        System.out.println ("Correlation : " + correlationId);
         logger.debug("Correlation Id Found: {}", correlationId);
 
         LoansDto loansDto = iLoansService.fetchLoan(mobileNumber);

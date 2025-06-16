@@ -1,41 +1,82 @@
 server:
   port: 8070
+  shutdown: graceful  # Added graceful shutdown
 
 spring:
   application:
     name: "eureka-server"
-
-  config:
-    # import: "optional:configserver:http://config-server:8071"
-    import: "optional:configserver:http://localhost:8071"
-
   profiles:
-    active: "dev" 
+    active: "dev"
+  config:
+    import: "configserver:http://localhost:8071"
+    # import: "configserver:http://config-server:8071"
+  cloud:
+    config:
+      fail-fast: false  # Continue if config server is unavailable
+      retry:
+        initial-interval: 2000
+        max-interval: 5000
+        max-attempts: 3
 
 eureka:
   instance:
     hostname: localhost
     prefer-ip-address: true
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}  # Unique instance ID
+    lease-renewal-interval-in-seconds: 5  # Faster renewal in dev
+    lease-expiration-duration-in-seconds: 15  # Faster expiration in dev
+    status-page-url: http://localhost:${server.port}/actuator/info
+    # status-page-url: http://configserver:${server.port}/actuator/info
+    health-check-url: http://localhost:${server.port}/actuator/health
+    # health-check-url: http://configserver:${server.port}/actuator/health
 
   client:
     fetchRegistry: false
     registerWithEureka: false
     serviceUrl:
       defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+    healthcheck:
+      enabled: true
+    registry-fetch-interval-seconds: 5  # Faster refresh in dev
+
+  server:
+    enable-self-preservation: false  # Disable in dev for faster testing
+    eviction-interval-timer-in-ms: 5000  # Faster eviction in dev
+    response-cache-update-interval-ms: 5000  # Faster cache updates
 
 management:
   endpoints:
     web:
       exposure:
         include: "*"
-
+      cors:
+        allowed-origins: "http://localhost:*"
+        allowed-methods: "*"
   endpoint:
     health:
+      show-details: always
       probes:
         enabled: true
-
+    shutdown:
+      enabled: true  # Enable shutdown endpoint
   health:
     readiness-state:
       enabled: true
     liveness-state:
       enabled: true
+    diskspace:
+      enabled: false  # Disable in dev
+    eureka:
+      enabled: true  # Specific Eureka health indicator
+
+logging:
+  level:
+    com.netflix.eureka: DEBUG
+    com.netflix.discovery: DEBUG
+    org.springframework.cloud: DEBUG
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr([%thread]){blue} %clr(%-5level){green} %clr(${spring.application.name}){cyan} - %clr(%msg){white}%n"
+
+# Dev-only features
+debug: true  # Enable debug mode
+spring.jpa.show-sql: true  # If using JPA

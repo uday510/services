@@ -9,30 +9,91 @@ spring:
         git:
           uri: "https://github.com/uday510/config-server.git"
           default-label: master
-          timeout: 5
+          timeout: 10
           clone-on-start: true
           force-pull: true
+          basedir: /tmp/config-repo
+          search-paths: '{application}'
+          skip-ssl-validation: false
+        encrypt:
+          enabled: true
+      fail-fast: false
+
   rabbitmq:
-    host: "localhost"
-    port: 5672
-    username: "guest"
-    password: "guest"
+    host: "${RABBITMQ_HOST:localhost}"
+    port: "${RABBITMQ_PORT:5672}"
+    username: "${RABBITMQ_USER:guest}"
+    password: "${RABBITMQ_PASSWORD:guest}"
+    connection-timeout: 5000
+
 management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: "health,info,env,refresh,encrypt,decrypt"
+      cors:
+        allowed-origins: "*"
+    jmx:
+      exposure:
+        include: "health,metrics"
+  endpoint:
+    health:
+      show-details: when-authorized
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include: "diskSpace" 
   health:
     readiness-state:
       enabled: true
     liveness-state:
       enabled: true
-  endpoint:
-    health:
-      probes:
-        enabled: true
+    diskspace:
+      enabled: true
+      path: /tmp
+    config:  
+      enabled: true
 
 encrypt:
-  key: "45D81EC1EF61DF9AD8D3E5BB397F9"
+  key: "${ENCRYPT_KEY:45D81EC1EF61DF9AD8D3E5BB397F9}"
+  fail-on-error: true
+
 server:
   port: 8071
+  shutdown: graceful
+  error:
+    include-message: on-param
+
+security:
+  user:
+    name: admin
+    password: "${ADMIN_PASSWORD:admin}"
+    roles: ACTUATOR_ADMIN
+
+info:
+  app:
+    name: "Config Server"
+    description: "Centralized Configuration Service"
+    version: "2.0.0"
+  git:
+    branch: "${git.branch:master}"
+    commit:
+      id: "${git.commit.id:unknown}"
+
+logging:
+  level:
+    org.springframework.cloud.config.server: INFO
+    org.springframework.security: WARN
+    org.springframework.boot.actuate: INFO
+    org.springframework.web: WARN
+    org.springframework.cloud.config.server.environment: DEBUG
+    org.springframework.security.crypto: WARN
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr([%thread]){blue} %clr(%-5level){green} %clr(%logger{36}){cyan} - %clr(%msg){white}%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: ./logs/config-server.log
+    max-history: 30
+    max-size: 100MB
+    total-size-cap: 1GB

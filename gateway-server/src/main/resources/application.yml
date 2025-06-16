@@ -1,49 +1,81 @@
+server:
+  port: 8080
+  shutdown: graceful
+
 spring:
   application:
     name: "gateway-server"
-
+  profiles:
+    active: "dev"
   config:
-    #  import: "optional:configserver:http://config-server:8071"
-    import: "optional:configserver:http://localhost:8071/"
-
+    import: "configserver:http://localhost:8071"
+    # import: "configserver:http://config-server:8071"
   cloud:
     gateway:
-      server:
-        webflux:
-          discovery:
-            locator:
-              enabled: true
-              lower-case-service-id: true
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+          predicates:
+            - name: Path
+              args:
+                pattern: "'/services/'+serviceId.toLowerCase()+'/**'"
+          filters:
+            - name: RewritePath
+              args:
+                regexp: "'/services/' + serviceId.toLowerCase() + '/(?<remaining>.*)'"
+                replacement: "'/${remaining}'"
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin
+        - AddRequestHeader=X-Gateway-Request-Time, ${T(java.time.Instant).now().toString()}
+      httpclient:
+        connect-timeout: 1000
+        response-timeout: 5s
+        pool:
+          max-connections: 100
+          max-idle-time: 30s
 
   cache:
     type: caffeine
-    cache-names:
-      - loadbalancer
+    cache-names: loadbalancer,route-definitions
     caffeine:
-      spec: maximumSize=1000, expireAfterWrite=30s
+      spec: maximumSize=1000, expireAfterWrite=30s, recordStats
 
 management:
   endpoints:
     web:
       exposure:
         include: "*"
-
+      cors:
+        allowed-origins: "http://localhost:*"
   endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+    # Corrected Gateway endpoint configuration:
     gateway:
-      access: unrestricted
-
-  info:
-    env:
+      enabled: true  # Keep either this OR 'access' property, not both
+      # access: unrestricted  # Removed as it conflicts with 'enabled'
+  health:
+    readiness-state:
+      enabled: true
+    liveness-state:
       enabled: true
 
 info:
   app:
-    name: "gatewayserver"
-    description: "Gateway Service"
+    name: "gateway-server"
+    description: "API Gateway Service"
     version: "1.0.0"
 
 logging:
   level:
-    com:
-      app:
-        gatewayserver: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.web.reactive: DEBUG
+    com.app.gatewayserver: TRACE
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr([%thread]){blue} %clr(%-5level){green} %clr(${spring.application.name}){cyan} - %clr(%msg){white}%n"
+
+# Dev features
+debug: true
