@@ -9,7 +9,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 2048m
+          memory: 1024m
     environment:
       SPRING_RABBITMQ_HOST: "rabbitmq"
 

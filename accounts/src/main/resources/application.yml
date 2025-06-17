@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 9000
 
 spring:
   application:
@@ -10,16 +10,16 @@ spring:
 
   datasource:
     # For local development:
-     url: jdbc:mysql://localhost:3306/accountsdb
-     username: root
-     password: root
+    #    url: jdbc:mysql://localhost:3306/accountsdb
+    #    username: root
+    #    password: root
 
-#     For Docker/production:
-#     url: jdbc:mysql://accounts-db:3306/accountsdb
-#     username: root
-#     password: root
-     driver-class-name: com.mysql.cj.jdbc.Driver
-     hikari:
+    #     For Docker/production:
+    url: jdbc:mysql://accounts-db:3306/accountsdb
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
       pool-name: CardsHikariPool
       maximum-pool-size: 10
       minimum-idle: 5
@@ -47,9 +47,9 @@ spring:
 
   config:
     # For local dev:
-     import: "configserver:http://localhost:8071"
+    #    import: "configserver:http://localhost:8071"
     # For Docker/production:
-#    import: "configserver:http://config-server:8071"
+    import: "configserver:http://config-server:8071"
 
   rabbitmq:
     # For local dev:
@@ -69,7 +69,7 @@ management:
       enabled: true
   info:
     env:
-      enabled: true      
+      enabled: true
 
 endpoints:
   shutdown:
@@ -83,7 +83,7 @@ eureka:
     registerWithEureka: true
     serviceUrl:
       # For local dev:
-      # defaultZone: "http://localhost:8070/eureka"
+      #       defaultZone: "http://localhost:8070/eureka"
       # For Docker/production:
       defaultZone: "http://eureka-server:8070/eureka"
 
@@ -99,25 +99,25 @@ logging:
     com:
       bank:
         cards: DEBUG
-    
+
     # HikariCP connection pool
     com.zaxxer.hikari: TRACE
     com.zaxxer.hikari.HikariConfig: DEBUG
-    
+
     # Hibernate/JPA
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     org.hibernate.stat: DEBUG
     org.hibernate.engine.jdbc.spi.SqlStatementLogger: DEBUG
-    
+
     # Connection management
     org.hibernate.engine.jdbc.connections: DEBUG
     org.hibernate.orm.connections.pooling: DEBUG
-    
+
     # Spring
     org.springframework.transaction: DEBUG
     org.springframework.jdbc.core.JdbcTemplate: DEBUG
-    
+
     # Root logger
     root: INFO
 

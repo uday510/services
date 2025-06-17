@@ -13,3 +13,12 @@ docker inspect --format='{{json .State.Health}}' rabbitmq | jq
 
 
 docker system prune -a --volumes
+
+
+docker compose -f docker-compose.yml up -d
+
+
+docker compose -f db.yml up -d
+
+docker compose -f rabbitmq.yml up -d
+
