@@ -75,3 +75,5 @@ docker-compose/*.log
 /config-server/.env
 /config-server/mvnw
 /config-server/mvnw.cmd
+
+/config-server/logs
