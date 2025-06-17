@@ -23,38 +23,51 @@ import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
-public class CustomerServiceImpl implements ICustomerService  {
+public class CustomerServiceImpl implements ICustomerService {
 
   private final AccountsRepository accountsRepository;
   private final CustomerRepository customerRepository;
   private final CardsFeignClient cardsFeignClient;
   private final LoansFeignClient loansFeignClient;
 
-  @SuppressWarnings("null")
   @Override
   public CustomerDetailsDto fetchCustomerDetailsDto(String correlationId, String mobileNumber) throws Exception {
     Customer customer = customerRepository.findByMobileNumber(mobileNumber)
         .orElseThrow(() -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber));
 
     Accounts accounts = accountsRepository.findByCustomerId(customer.getCustomerId())
-        .orElseThrow(() -> new ResourceNotFoundException(
-            "Accounts", "accountNumber", customer.getCustomerId().toString()));
+        .orElseThrow(
+            () -> new ResourceNotFoundException("Accounts", "customerId", customer.getCustomerId().toString()));
 
-    CustomerDetailsDto customerDetailsDto = CustomerMapper.mapToCustomerDetailsDto(customer,
-        new CustomerDetailsDto());
-
+    CustomerDetailsDto customerDetailsDto = CustomerMapper.mapToCustomerDetailsDto(customer, new CustomerDetailsDto());
     customerDetailsDto.setAccountsDto(AccountMapper.mapToAccountsDto(accounts, new AccountsDto()));
-    ResponseEntity<SuccessResponseDto<LoansDto>> loanDetails = loansFeignClient.fetchLoanDetails(correlationId, mobileNumber);
-    if (loanDetails == null || loanDetails.getBody() == null) throw new Exception("LOAN DETAILS ::: ");
-    
-    customerDetailsDto.setLoansDto(loanDetails.getBody().getData());
 
-    ResponseEntity<SuccessResponseDto<CardsDto>> cardDetails = cardsFeignClient.fetchCardDetails(correlationId, mobileNumber);
-    if (cardDetails == null || cardDetails.getBody() == null) throw new Exception("CARDS DETAILS ::: ");
+    try {
+      ResponseEntity<SuccessResponseDto<LoansDto>> loanResponse = loansFeignClient.fetchLoanDetails(correlationId,
+          mobileNumber);
+      if (loanResponse != null && loanResponse.getBody() != null) {
+        customerDetailsDto.setLoansDto(loanResponse.getBody().getData());
+      } else {
+        System.out.println("Loan service fallback or empty response triggered.");
+      }
+    } catch (Exception ex) {
+      System.err.println("Error calling loan service: " + ex.getMessage());
+    }
 
-    customerDetailsDto.setCardsDto(cardDetails.getBody().getData());
+    try {
+      ResponseEntity<SuccessResponseDto<CardsDto>> cardResponse = cardsFeignClient.fetchCardDetails(correlationId,
+          mobileNumber);
+      if (cardResponse != null && cardResponse.getBody() != null) {
+        customerDetailsDto.setCardsDto(cardResponse.getBody().getData());
+      } else {
+        System.out.println("Card service fallback or empty response triggered.");
+      }
+    } catch (Exception ex) {
+      System.err.println("Error calling card service: " + ex.getMessage());
+    }
 
     return customerDetailsDto;
   }
-  
+
+
 }
