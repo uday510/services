@@ -60,10 +60,10 @@ spring:
     password: guest
   
   cloud:
-    openfiegn:
+    openfeign:
       circuitbreaker:
-        enabled=true:
-  
+        enabled: true
+
 
 management:
   endpoints:
