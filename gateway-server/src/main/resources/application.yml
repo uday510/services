@@ -8,8 +8,8 @@ spring:
   profiles:
     active: "dev"
   config:
-    import: "configserver:http://localhost:8071"
-    # import: "configserver:http://config-server:8071"
+    # import: "configserver:http://localhost:8071"
+    import: "configserver:http://config-server:8071"
   cloud:
     gateway:
       discovery:
