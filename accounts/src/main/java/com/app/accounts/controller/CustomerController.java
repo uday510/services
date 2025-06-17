@@ -19,51 +19,47 @@ import com.app.accounts.dto.CustomerDetailsDto;
 import com.app.accounts.dto.SuccessResponseDto;
 import com.app.accounts.service.ICustomerService;
 
-
-@Tag(
-        name = "CRUD REST APIs for Accounts",
-        description = "CRUD APIs: CREATE, UPDATE, FETCH AND DELETE"
-)
+@Tag(name = "CRUD REST APIs for Accounts", description = "CRUD APIs: CREATE, UPDATE, FETCH AND DELETE")
 @RestController
-@RequestMapping(value = "/api/customer", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(value = "/api/customer", produces = { MediaType.APPLICATION_JSON_VALUE })
 @Validated
 @AllArgsConstructor
 public class CustomerController {
 
-  private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
+        private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
 
-  private final ICustomerService iCustomerService;
+        private final ICustomerService iCustomerService;
 
-    @Operation(
-            summary = "Fetch Customer Details REST API",
-            description = "REST API to fetch Customer details based on mobile number"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "HTTP Status OK"
-    )
-         
-  @GetMapping
-  public ResponseEntity<SuccessResponseDto<CustomerDetailsDto>> fetchCustomerDetails(
-                                                                            @RequestHeader("app-correlation-id") String correlationId,
-                                                                            @RequestParam
-                                                                            @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
-                                                                            String mobileNumber, HttpServletRequest request) throws Exception
-                                                                            {
+        @Operation(summary = "Fetch Customer Details REST API", description = "REST API to fetch Customer details based on mobile number")
+        @ApiResponse(responseCode = "200", description = "HTTP Status OK")
 
-    logger.debug("Correlation Id Found: {}", correlationId);
+        @GetMapping
+        public ResponseEntity<SuccessResponseDto<CustomerDetailsDto>> fetchCustomerDetails(
+                        @RequestHeader("app-correlation-id") String correlationId,
+                        @RequestParam @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits") String mobileNumber,
+                        HttpServletRequest request) throws Exception {
 
-    CustomerDetailsDto customerDetailsDto = iCustomerService.fetchCustomerDetailsDto(correlationId, mobileNumber);
-    SuccessResponseDto<CustomerDetailsDto> response = SuccessResponseDto.of(
-          request.getRequestURI(),
-                HttpStatus.OK,
-                HttpStatus.OK.getReasonPhrase(),
-                customerDetailsDto
-            );
-      
-            
-  return ResponseEntity.status(HttpStatus.OK).body(response);
-  }
-  
+                Thread thread = new Thread(() -> {
+                        try {
+                                logger.debug("sleeping...");
+                                Thread.sleep(10_000);
+                        } catch (InterruptedException e) {
+                                e.printStackTrace();
+                        }
+                });
+                thread.start();
+                // thread.join();
+                
+
+                CustomerDetailsDto customerDetailsDto = iCustomerService.fetchCustomerDetailsDto(correlationId,
+                                mobileNumber);
+                SuccessResponseDto<CustomerDetailsDto> response = SuccessResponseDto.of(
+                                request.getRequestURI(),
+                                HttpStatus.OK,
+                                HttpStatus.OK.getReasonPhrase(),
+                                customerDetailsDto);
+
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
 
 }
