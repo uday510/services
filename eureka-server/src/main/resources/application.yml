@@ -71,6 +71,7 @@ management:
 
 logging:
   level:
+    com.app.eurekaserver: DEBUG
     com.netflix.eureka: DEBUG
     com.netflix.discovery: DEBUG
     org.springframework.cloud: DEBUG

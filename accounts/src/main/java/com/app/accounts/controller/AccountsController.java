@@ -2,6 +2,8 @@ package com.app.accounts.controller;
 
 import com.app.accounts.dto.*;
 import com.app.accounts.service.IAccountService;
+
+import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -133,6 +135,7 @@ public class AccountsController {
                 return ResponseEntity.status(HttpStatus.OK).body(response);
         }
 
+        @Retry(name = "getBuildInfo", fallbackMethod = "getBuildInfoFallback")
         @Operation(summary = "Fetch Build Info REST API", description = "REST API to fetch Build information")
         @ApiResponse(responseCode = "200", description = "HTTP Status OK")
         @GetMapping("/build-info")
@@ -143,6 +146,18 @@ public class AccountsController {
                                 HttpStatus.OK,
                                 HttpStatus.OK.getReasonPhrase(),
                                 buildVersion);
+
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
+
+        public ResponseEntity<SuccessResponseDto<String>> getBuildInfoFallback(HttpServletRequest request,
+                        Throwable throwable) {
+
+                SuccessResponseDto<String> response = SuccessResponseDto.of(
+                                request.getRequestURI(),
+                                HttpStatus.OK,
+                                HttpStatus.OK.getReasonPhrase(),
+                                HttpStatus.CONTINUE.toString());
 
                 return ResponseEntity.status(HttpStatus.OK).body(response);
         }

@@ -83,6 +83,7 @@ info:
 
 logging:
   level:
+    com.app.configserver: DEBUG
     org.springframework.cloud.config.server: INFO
     org.springframework.security: WARN
     org.springframework.boot.actuate: INFO

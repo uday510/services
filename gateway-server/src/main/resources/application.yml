@@ -30,7 +30,7 @@ spring:
         - AddRequestHeader=X-Gateway-Request-Time, ${T(java.time.Instant).now().toString()}
       httpclient:
         connect-timeout: 1000
-        response-timeout: 5s
+        response-timeout: 2s
         pool:
           max-connections: 100
           max-idle-time: 30s

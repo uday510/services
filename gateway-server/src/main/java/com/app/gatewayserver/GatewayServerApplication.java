@@ -7,6 +7,7 @@ import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -40,17 +41,22 @@ public class GatewayServerApplication {
 								.rewritePath(BASE_PATH_PREFIX + ACCOUNTS + "/(?<segment>.*)", "/${segment}")
 								.filter(addCommonHeaders("ACCOUNTS"))
 								.circuitBreaker(c -> c.setName("accountsCircuitBreaker")
-										.setFallbackUri("forward:/fallback/accounts"))
-						)
+										.setFallbackUri("forward:/fallback/accounts")))
 						.uri(URI_ACCOUNTS))
 
 				.route(CARDS, r -> r
 						.path(BASE_PATH_PREFIX + CARDS + "/**")
 						.filters(f -> f
 								.rewritePath(BASE_PATH_PREFIX + CARDS + "/(?<segment>.*)", "/${segment}")
-								.filter(addCommonHeaders("CARDS"))
-								.circuitBreaker(c -> c.setName("cardsCircuitBreaker")
-										.setFallbackUri("forward:/fallback/cards"))
+								.retry(
+										retryConfig -> retryConfig.setRetries(3)
+												.setMethods(org.springframework.http.HttpMethod.GET)
+												.setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true))
+						// .filter(addCommonHeaders("CARDS"))
+						// .circuitBreaker(c -> c.setName("cardsCircuitBreaker")
+						// .setFallbackUri(
+						// "forward:/fallback/cards")
+						// )
 						)
 						.uri(URI_CARDS))
 
@@ -60,8 +66,7 @@ public class GatewayServerApplication {
 								.rewritePath(BASE_PATH_PREFIX + LOANS + "/(?<segment>.*)", "/${segment}")
 								.filter(addCommonHeaders("LOANS"))
 								.circuitBreaker(c -> c.setName("loansCircuitBreaker")
-										.setFallbackUri("forward:/fallback/loans"))
-						)
+										.setFallbackUri("forward:/fallback/loans")))
 						.uri(URI_LOANS))
 
 				.build();
