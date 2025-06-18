@@ -124,7 +124,7 @@ info:
 logging:
   level:
     # Your application's base package - adjust to match your actual package
-    com.app.bank: DEBUG
+    com.app.accounts: DEBUG
 
     # HikariCP connection pool
     com.zaxxer.hikari: TRACE
