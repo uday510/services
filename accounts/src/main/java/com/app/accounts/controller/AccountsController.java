@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
 
 @Tag(name = "CRUD REST APIs for Accounts", description = "CRUD APIs: CREATE, UPDATE, FETCH AND DELETE")
 @RestController
@@ -82,12 +83,12 @@ public class AccountsController {
                         HttpServletRequest request) {
 
                 CustomerDto customerDto = iAccountService.fetchAccount(mobileNumber);
-                
+
                 // try {
-                //         Thread.sleep(10_000);
+                // Thread.sleep(10_000);
 
                 // } catch (InterruptedException e) {
-                //         Thread.currentThread().interrupt();
+                // Thread.currentThread().interrupt();
                 // }
 
                 SuccessResponseDto<CustomerDto> response = SuccessResponseDto.of(
@@ -160,17 +161,17 @@ public class AccountsController {
                 // System.out.println("Main thread was interrupted");
                 // }
 
-                // logger.info("retring...");
+                // logger.debug("retring...");
 
-                throw new NullPointerException();
+                // throw new TimeoutException();
 
-                // SuccessResponseDto<String> response = SuccessResponseDto.of(
-                //                 request.getRequestURI(),
-                //                 HttpStatus.OK,
-                //                 HttpStatus.OK.getReasonPhrase(),
-                //                 buildVersion);
+                SuccessResponseDto<String> response = SuccessResponseDto.of(
+                                request.getRequestURI(),
+                                HttpStatus.OK,
+                                HttpStatus.OK.getReasonPhrase(),
+                                buildVersion);
 
-                // return ResponseEntity.status(HttpStatus.OK).body(response);
+                return ResponseEntity.status(HttpStatus.OK).body(response);
         }
 
         public ResponseEntity<SuccessResponseDto<String>> getBuildInfoFallback(HttpServletRequest request,
