@@ -13,13 +13,16 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
+
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +34,8 @@ import java.util.Map;
 public class AccountsController {
 
         private final IAccountService iAccountService;
+
+        private static final Logger logger = LoggerFactory.getLogger(AccountsController.class);
 
         @Value("${build.version}")
         private String buildVersion;
@@ -77,6 +82,13 @@ public class AccountsController {
                         HttpServletRequest request) {
 
                 CustomerDto customerDto = iAccountService.fetchAccount(mobileNumber);
+                
+                // try {
+                //         Thread.sleep(10_000);
+
+                // } catch (InterruptedException e) {
+                //         Thread.currentThread().interrupt();
+                // }
 
                 SuccessResponseDto<CustomerDto> response = SuccessResponseDto.of(
                                 request.getRequestURI(),
@@ -141,13 +153,24 @@ public class AccountsController {
         @GetMapping("/build-info")
         public ResponseEntity<SuccessResponseDto<String>> getBuildInfo(HttpServletRequest request) {
 
-                SuccessResponseDto<String> response = SuccessResponseDto.of(
-                                request.getRequestURI(),
-                                HttpStatus.OK,
-                                HttpStatus.OK.getReasonPhrase(),
-                                buildVersion);
+                // try {
+                // Thread.sleep(10_000);
+                // } catch (InterruptedException e) {
+                // Thread.currentThread().interrupt();
+                // System.out.println("Main thread was interrupted");
+                // }
 
-                return ResponseEntity.status(HttpStatus.OK).body(response);
+                // logger.info("retring...");
+
+                throw new NullPointerException();
+
+                // SuccessResponseDto<String> response = SuccessResponseDto.of(
+                //                 request.getRequestURI(),
+                //                 HttpStatus.OK,
+                //                 HttpStatus.OK.getReasonPhrase(),
+                //                 buildVersion);
+
+                // return ResponseEntity.status(HttpStatus.OK).body(response);
         }
 
         public ResponseEntity<SuccessResponseDto<String>> getBuildInfoFallback(HttpServletRequest request,

@@ -31,273 +31,187 @@ import java.util.Map;
  * @author Uday Teja
  */
 
-@Tag(
-        name = "CRUD REST APIs for Cards in Loans Service",
-        description = "CRUD REST APIs in Loans Service to CREATE, UPDATE, FETCH AND DELETE card details"
-)
+@Tag(name = "CRUD REST APIs for Cards in Loans Service", description = "CRUD REST APIs in Loans Service to CREATE, UPDATE, FETCH AND DELETE card details")
 @RestController
-@RequestMapping(path = "/api/loans", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(path = "/api/loans", produces = { MediaType.APPLICATION_JSON_VALUE })
 @Validated
 public class LoansController {
 
-    private static final Logger logger = LoggerFactory.getLogger(LoansController.class);
+        private static final Logger logger = LoggerFactory.getLogger(LoansController.class);
 
-    @Value("${build.version}")
-    private String buildVersion;
+        @Value("${build.version}")
+        private String buildVersion;
 
-    private final ILoansService iLoansService;
+        private final ILoansService iLoansService;
 
-    private final Environment environment;
+        private final Environment environment;
 
-    private final LoansContactInfoDto loansContactInfoDto;
+        private final LoansContactInfoDto loansContactInfoDto;
 
-    public LoansController(
-            ILoansService iLoansService,
-            Environment environment,
-            LoansContactInfoDto loansContactInfoDto
-    ) {
-        this.iLoansService = iLoansService;
-        this.environment = environment;
-        this.loansContactInfoDto = loansContactInfoDto;
-    }
+        public LoansController(
+                        ILoansService iLoansService,
+                        Environment environment,
+                        LoansContactInfoDto loansContactInfoDto) {
+                this.iLoansService = iLoansService;
+                this.environment = environment;
+                this.loansContactInfoDto = loansContactInfoDto;
+        }
 
-    @Operation(
-            summary = "Create Loan REST API",
-            description = "REST API to create new Loan inside Loans Service"
-    )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "201",
-                    description = "HTTP Status CREATED"
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "HTTP Status Internal Server Error",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorResponseDto.class)
-                    )
-            )
-    }
-    )
-    @PostMapping
-    public ResponseEntity<SuccessResponseDto<String>> createLoan(@Valid @RequestParam
-                                                                 @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
-                                                                 String mobileNumber, HttpServletRequest request) {
-        iLoansService.createLoan(mobileNumber);
+        @Operation(summary = "Create Loan REST API", description = "REST API to create new Loan inside Loans Service")
+        @ApiResponses({
+                        @ApiResponse(responseCode = "201", description = "HTTP Status CREATED"),
+                        @ApiResponse(responseCode = "500", description = "HTTP Status Internal Server Error", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
+        })
+        @PostMapping
+        public ResponseEntity<SuccessResponseDto<String>> createLoan(
+                        @Valid @RequestParam @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits") String mobileNumber,
+                        HttpServletRequest request) {
+                iLoansService.createLoan(mobileNumber);
 
-        SuccessResponseDto<String> response = SuccessResponseDto.of(
-                request.getRequestURI(),
-                HttpStatus.CREATED,
-                HttpStatus.CREATED.getReasonPhrase(),
-                null
-        );
+                SuccessResponseDto<String> response = SuccessResponseDto.of(
+                                request.getRequestURI(),
+                                HttpStatus.CREATED,
+                                HttpStatus.CREATED.getReasonPhrase(),
+                                null);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
+                return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        }
 
-    @Operation(
-            summary = "Fetch Loan Details REST API",
-            description = "REST API to fetch loan details based on a mobile number"
-    )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "HTTP Status OK"
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "HTTP Status Internal Server Error",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorResponseDto.class)
-                    )
-            )
-    })
+        @Operation(summary = "Fetch Loan Details REST API", description = "REST API to fetch loan details based on a mobile number")
+        @ApiResponses({
+                        @ApiResponse(responseCode = "200", description = "HTTP Status OK"),
+                        @ApiResponse(responseCode = "500", description = "HTTP Status Internal Server Error", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
+        })
 
-    @GetMapping
-    public ResponseEntity<SuccessResponseDto<LoansDto>> fetchLoanDetails(
-                                                     @RequestHeader("app-correlation-id") String correlationId,
-                                                     @RequestParam
-                                                     @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
-                                                     String mobileNumber, HttpServletRequest request) {
+        @GetMapping
+        public ResponseEntity<SuccessResponseDto<LoansDto>> fetchLoanDetails(
+                        @RequestHeader("app-correlation-id") String correlationId,
+                        @RequestParam @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits") String mobileNumber,
+                        HttpServletRequest request) {
 
+                // try {
+                //         Thread.sleep(10_000);
 
-        System.out.println ("Correlation : " + correlationId);
-        logger.debug("Correlation Id Found: {}", correlationId);
+                // } catch (InterruptedException e) {
+                //         Thread.currentThread().interrupt();
+                // }
 
-        LoansDto loansDto = iLoansService.fetchLoan(mobileNumber);
+                System.out.println("Correlation : " + correlationId);
+                logger.debug("Correlation Id Found: {}", correlationId);
 
-        SuccessResponseDto<LoansDto> response = SuccessResponseDto.of(
-                request.getRequestURI(),
-                HttpStatus.OK,
-                HttpStatus.OK.getReasonPhrase(),
-                loansDto
-        );
+                LoansDto loansDto = iLoansService.fetchLoan(mobileNumber);
 
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
+                SuccessResponseDto<LoansDto> response = SuccessResponseDto.of(
+                                request.getRequestURI(),
+                                HttpStatus.OK,
+                                HttpStatus.OK.getReasonPhrase(),
+                                loansDto);
 
-    @Operation(
-            summary = "Update Loan Details REST API",
-            description = "REST API to update card details based on a card number"
-    )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "HTTP Status OK"
-            ),
-            @ApiResponse(
-                    responseCode = "417",
-                    description = "Expectation Failed"
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "HTTP Status Internal Server Error",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorResponseDto.class)
-                    )
-            )
-    })
-    @PutMapping
-    public ResponseEntity<SuccessResponseDto<Object>> updateLoanDetails(@Valid @RequestBody LoansDto loansDto, HttpServletRequest request) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("status", "updated");
-        data.put("success", true);
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
 
-        iLoansService.updateLoad(loansDto);
-        SuccessResponseDto<Object> response = SuccessResponseDto.of(
-                request.getRequestURI(),
-                HttpStatus.OK,
-                HttpStatus.OK.getReasonPhrase(),
-                data
-        );
+        @Operation(summary = "Update Loan Details REST API", description = "REST API to update card details based on a card number")
+        @ApiResponses({
+                        @ApiResponse(responseCode = "200", description = "HTTP Status OK"),
+                        @ApiResponse(responseCode = "417", description = "Expectation Failed"),
+                        @ApiResponse(responseCode = "500", description = "HTTP Status Internal Server Error", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
+        })
+        @PutMapping
+        public ResponseEntity<SuccessResponseDto<Object>> updateLoanDetails(@Valid @RequestBody LoansDto loansDto,
+                        HttpServletRequest request) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("status", "updated");
+                data.put("success", true);
 
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
+                iLoansService.updateLoad(loansDto);
+                SuccessResponseDto<Object> response = SuccessResponseDto.of(
+                                request.getRequestURI(),
+                                HttpStatus.OK,
+                                HttpStatus.OK.getReasonPhrase(),
+                                data);
 
-    @Operation(
-            summary = "Delete Loan REST API",
-            description = "REST API to delete Card details based on a mobile number"
-    )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "HTTP Status OK"
-            ),
-            @ApiResponse(
-                    responseCode = "417",
-                    description = "Expectation Failed"
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "HTTP Status Internal Server Error",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorResponseDto.class)
-                    )
-            )
-    })
-    @DeleteMapping
-    public ResponseEntity<SuccessResponseDto<Object>> deleteLoanAccount(@RequestParam
-                                                                     @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits")
-                                                                     String mobileNumber,
-                                                                     HttpServletRequest request) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("status", "deleted");
-        data.put("success", true);
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
 
-        iLoansService.deleteLoan(mobileNumber);
+        @Operation(summary = "Delete Loan REST API", description = "REST API to delete Card details based on a mobile number")
+        @ApiResponses({
+                        @ApiResponse(responseCode = "200", description = "HTTP Status OK"),
+                        @ApiResponse(responseCode = "417", description = "Expectation Failed"),
+                        @ApiResponse(responseCode = "500", description = "HTTP Status Internal Server Error", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
+        })
+        @DeleteMapping
+        public ResponseEntity<SuccessResponseDto<Object>> deleteLoanAccount(
+                        @RequestParam @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits") String mobileNumber,
+                        HttpServletRequest request) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("status", "deleted");
+                data.put("success", true);
 
-        SuccessResponseDto<Object> response = SuccessResponseDto.of(
-                request.getRequestURI(),
-                HttpStatus.OK,
-                HttpStatus.OK.getReasonPhrase(),
-                data
-        );
+                iLoansService.deleteLoan(mobileNumber);
 
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
+                SuccessResponseDto<Object> response = SuccessResponseDto.of(
+                                request.getRequestURI(),
+                                HttpStatus.OK,
+                                HttpStatus.OK.getReasonPhrase(),
+                                data);
 
-    @Operation(
-            summary = "Fetch Build Info REST API",
-            description = "REST API to fetch Build information"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "HTTP Status OK"
-    )
-    @GetMapping("/build-info")
-    public ResponseEntity<SuccessResponseDto<String>> getBuildInfo(HttpServletRequest request) {
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
 
-        SuccessResponseDto<String> response = SuccessResponseDto.of(
-                request.getRequestURI(),
-                HttpStatus.OK,
-                HttpStatus.OK.getReasonPhrase(),
-                buildVersion
-        );
+        @Operation(summary = "Fetch Build Info REST API", description = "REST API to fetch Build information")
+        @ApiResponse(responseCode = "200", description = "HTTP Status OK")
+        @GetMapping("/build-info")
+        public ResponseEntity<SuccessResponseDto<String>> getBuildInfo(HttpServletRequest request) {
 
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
+                SuccessResponseDto<String> response = SuccessResponseDto.of(
+                                request.getRequestURI(),
+                                HttpStatus.OK,
+                                HttpStatus.OK.getReasonPhrase(),
+                                buildVersion);
 
-    @Operation(
-            summary = "Fetch JAVA Version REST API",
-            description = "REST API to fetch Java version information"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "HTTP Status OK"
-    )
-    @GetMapping("/java-version")
-    public ResponseEntity<SuccessResponseDto<String>> getJavaVersion(HttpServletRequest request) {
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
 
-        SuccessResponseDto<String> response = SuccessResponseDto.of(
-                request.getRequestURI(),
-                HttpStatus.OK,
-                HttpStatus.OK.getReasonPhrase(),
-                environment.getProperty("JAVA_HOME")
-        );
+        @Operation(summary = "Fetch JAVA Version REST API", description = "REST API to fetch Java version information")
+        @ApiResponse(responseCode = "200", description = "HTTP Status OK")
+        @GetMapping("/java-version")
+        public ResponseEntity<SuccessResponseDto<String>> getJavaVersion(HttpServletRequest request) {
 
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
+                SuccessResponseDto<String> response = SuccessResponseDto.of(
+                                request.getRequestURI(),
+                                HttpStatus.OK,
+                                HttpStatus.OK.getReasonPhrase(),
+                                environment.getProperty("JAVA_HOME"));
 
-    @Operation(
-            summary = "Fetch Maven Version REST API",
-            description = "REST API to fetch Maven version information"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "HTTP Status OK"
-    )
-    @GetMapping("/maven-home")
-    public ResponseEntity<SuccessResponseDto<String>> getMavenHome(HttpServletRequest request) {
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
 
-        SuccessResponseDto<String> response = SuccessResponseDto.of(
-                request.getRequestURI(),
-                HttpStatus.OK,
-                HttpStatus.OK.getReasonPhrase(),
-                environment.getProperty("MAVEN_HOME")
-        );
+        @Operation(summary = "Fetch Maven Version REST API", description = "REST API to fetch Maven version information")
+        @ApiResponse(responseCode = "200", description = "HTTP Status OK")
+        @GetMapping("/maven-home")
+        public ResponseEntity<SuccessResponseDto<String>> getMavenHome(HttpServletRequest request) {
 
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
+                SuccessResponseDto<String> response = SuccessResponseDto.of(
+                                request.getRequestURI(),
+                                HttpStatus.OK,
+                                HttpStatus.OK.getReasonPhrase(),
+                                environment.getProperty("MAVEN_HOME"));
 
-    @Operation(
-            summary = "Fetch Contact Info REST API",
-            description = "REST API to fetch Contact info information"
-    )
-    @ApiResponse(
-            responseCode = "200",
-            description = "HTTP Status OK"
-    )
-    @GetMapping("/contact")
-    public ResponseEntity<SuccessResponseDto<LoansContactInfoDto>> getContactInfo(HttpServletRequest request) {
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
 
-        SuccessResponseDto<LoansContactInfoDto> response = SuccessResponseDto.of(
-                request.getRequestURI(),
-                HttpStatus.OK,
-                HttpStatus.OK.getReasonPhrase(),
-                loansContactInfoDto
-        );
+        @Operation(summary = "Fetch Contact Info REST API", description = "REST API to fetch Contact info information")
+        @ApiResponse(responseCode = "200", description = "HTTP Status OK")
+        @GetMapping("/contact")
+        public ResponseEntity<SuccessResponseDto<LoansContactInfoDto>> getContactInfo(HttpServletRequest request) {
 
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
+                SuccessResponseDto<LoansContactInfoDto> response = SuccessResponseDto.of(
+                                request.getRequestURI(),
+                                HttpStatus.OK,
+                                HttpStatus.OK.getReasonPhrase(),
+                                loansContactInfoDto);
+
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
 
 }

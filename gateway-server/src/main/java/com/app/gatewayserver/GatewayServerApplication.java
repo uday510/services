@@ -6,7 +6,12 @@ import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 
+import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
+import io.github.resilience4j.timelimiter.TimeLimiterConfig;
+
+import java.beans.Customizer;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -41,7 +46,8 @@ public class GatewayServerApplication {
 								.rewritePath(BASE_PATH_PREFIX + ACCOUNTS + "/(?<segment>.*)", "/${segment}")
 								.filter(addCommonHeaders("ACCOUNTS"))
 								.circuitBreaker(c -> c.setName("accountsCircuitBreaker")
-										.setFallbackUri("forward:/fallback/accounts")))
+										.setFallbackUri(
+												"forward:/fallback/accounts")))
 						.uri(URI_ACCOUNTS))
 
 				.route(CARDS, r -> r
@@ -66,14 +72,16 @@ public class GatewayServerApplication {
 								.rewritePath(BASE_PATH_PREFIX + LOANS + "/(?<segment>.*)", "/${segment}")
 								.filter(addCommonHeaders("LOANS"))
 								.circuitBreaker(c -> c.setName("loansCircuitBreaker")
-										.setFallbackUri("forward:/fallback/loans")))
+										.setFallbackUri("forward:/fallback/loans"))
+								.retry(retryConfig -> retryConfig.setRetries(3)
+										.setMethods(HttpMethod.GET)
+										.setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true)))
 						.uri(URI_LOANS))
-
 				.build();
 	}
 
 	/**
-	 * Adds common response headers to all requests.
+	 * Adds common response headers to all requests.a
 	 */
 	private GatewayFilter addCommonHeaders(String serviceId) {
 		return (exchange, chain) -> {
@@ -85,4 +93,11 @@ public class GatewayServerApplication {
 			return chain.filter(exchange);
 		};
 	}
+
+	@Bean
+	public Customizer<ReactiveResilience4JCircuitBreakerFactory> defaultCustomizer() {
+		return factory -> factory.configureDefault(id -> {
+		});
+	}
+
 }
