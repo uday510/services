@@ -3,6 +3,7 @@ package com.app.accounts.controller;
 import com.app.accounts.dto.*;
 import com.app.accounts.service.IAccountService;
 
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -186,6 +187,7 @@ public class AccountsController {
                 return ResponseEntity.status(HttpStatus.OK).body(response);
         }
 
+        @RateLimiter(name = "getJavaVersion", fallbackMethod = "getJavaVersionFallback")
         @Operation(summary = "Fetch JAVA Version REST API", description = "REST API to fetch Java version information")
         @ApiResponse(responseCode = "200", description = "HTTP Status OK")
         @GetMapping("/java-version")
@@ -224,6 +226,17 @@ public class AccountsController {
                                 HttpStatus.OK,
                                 HttpStatus.OK.getReasonPhrase(),
                                 accountsContactInfoDto);
+
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
+
+        public ResponseEntity<SuccessResponseDto<String>> getJavaVersionFallback(HttpServletRequest request, Throwable throwable) {
+
+                SuccessResponseDto<String> response = SuccessResponseDto.of(
+                                request.getRequestURI(),
+                                HttpStatus.OK,
+                                HttpStatus.OK.getReasonPhrase(),
+                                "RATE_LIMIT_EXCEEDED");
 
                 return ResponseEntity.status(HttpStatus.OK).body(response);
         }
