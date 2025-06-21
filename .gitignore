@@ -79,3 +79,8 @@ docker-compose/*.log
 /config-server/logs
 
 /config-server/local-config-repo
+
+/docker-compose/production/.data
+
+/.idea
+/.vscode

@@ -1,4 +1,5 @@
 services:
+
   configserver:
     image: "uday510/config-server:latest"
     container_name: config-server

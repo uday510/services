@@ -27,10 +27,12 @@ spring:
     connection-timeout: 5000
 
 management:
+  server:
+    base-path: /management       
   endpoints:
     web:
       exposure:
-        include: "health,info,env,refresh,encrypt,decrypt"
+        include: "health,info,env,refresh,encrypt,decrypt,prometheus"
       cors:
         allowed-origins: "*"
     jmx:
