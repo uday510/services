@@ -46,6 +46,11 @@ spring:
     cache-names: loadbalancer,route-definitions
     caffeine:
       spec: maximumSize=1000, expireAfterWrite=30s, recordStats
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: "http://localhost:7080/realms/master/protocol/openid-connect/certs"    
 
 management:
   endpoints:
@@ -97,6 +102,7 @@ resilience4j:
         permittedNumberOfCallsInHalfOpenState: 2
         failureRateThreshold: 50
         waitDurationInOpenState: 10000
+
 
 
 logging:
