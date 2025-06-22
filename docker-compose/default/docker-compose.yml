@@ -1,5 +1,98 @@
 services:
 
+  accounts-db:
+    image: mysql
+    container_name: accounts-db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: accountsdb
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  cards-db:
+    image: mysql
+    container_name: cards-db
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: cardsdb
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  loans-db:
+    image: mysql
+    container_name: loans-db
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: loansdb
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - micro-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+      
+  kafka:
+    image: apache/kafka:3.7.0
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_CLUSTER_ID: "5L6g3nShT-eMCtK--X86sw"
+      KAFKA_NODE_ID: "1"
+      KAFKA_PROCESS_ROLES: "controller,broker"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      KAFKA_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://localhost:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+      KAFKA_LOG_DIRS: "/tmp/kraft-combined-logs"
+    volumes:
+      - ./kafka-data:/tmp/kraft-combined-logs
+    command: >
+      sh -c "
+      if [ ! -f /tmp/kraft-combined-logs/meta.properties ]; then
+        /opt/kafka/bin/kafka-storage.sh format -t $${KAFKA_CLUSTER_ID} -c /opt/kafka/config/kraft/server.properties;
+      fi &&
+      /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/kraft/server.properties
+      "
+
   keycloak:
     image: quay.io/keycloak/keycloak:26.0.7
     container_name: keycloak
@@ -123,7 +216,7 @@ services:
       timeout: 5s
       retries: 10
       start_period: 10s
-  
+    
     extends:
       file: common-config.yml
       service: microservice-configservice-config
