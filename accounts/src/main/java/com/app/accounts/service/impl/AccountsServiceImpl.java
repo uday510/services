@@ -66,7 +66,7 @@ public class AccountsServiceImpl implements IAccountService {
 
         logger.info("Sending Communication request for the details, {}", accountsMessageDto);
         var result = streamBridge.send("sendCommunication-out-0", accountsMessageDto);
-        logger.info("Communication Result, {}", result);
+        logger.info("Communication Trigged ? {}", result);
     }
 
     public CustomerDto fetchAccount(String mobileNumber) {
@@ -118,5 +118,23 @@ public class AccountsServiceImpl implements IAccountService {
         accountsRepository.deleteByCustomerId(customer.getCustomerId());
         customerRepository.deleteById(customer.getCustomerId());
 
+    }
+
+    @Override
+    public boolean updateCommunicationStatus(Long accountNumber) {
+        if (accountNumber == null)
+            return false;
+
+        Accounts accounts = accountsRepository.findById(accountNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("Account", "AccountNumber",
+                        accountNumber.toString()));
+
+        accounts.setCommunicationSw(true);
+        accountsRepository.save(accounts);
+
+        logger.info("updated");
+
+        return true;
+    
     }
 }

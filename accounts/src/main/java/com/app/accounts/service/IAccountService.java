@@ -3,10 +3,6 @@ package com.app.accounts.service;
 import com.app.accounts.dto.CustomerDto;
 
 public interface IAccountService {
-    /**
-     *
-     * @param customerDto - CustomerRequestDTO
-     */
 
     void createAccount(CustomerDto customerDto);
 
@@ -15,5 +11,7 @@ public interface IAccountService {
     void updateAccount(CustomerDto customerDto);
 
     void deleteAccount(String mobileNumber);
+
+    boolean updateCommunicationStatus(Long accountNumber);
 
 }
