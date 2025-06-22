@@ -15,18 +15,18 @@ public class MessageFunctions {
   @Bean
   public Function<AccountMessageDto, AccountMessageDto> email() {
     return accountMessageDto -> {
-      Logger.info("Sending Email ..." + accountMessageDto.toString());
-      Logger.info("Details ::: " + accountMessageDto.toString());
-      return accountMessageDto;
+        Logger.info("Sending Email...");
+        Logger.info("Details ::: {}", accountMessageDto.toString());
+        return accountMessageDto;
     };
   }
 
   @Bean
   public Function<AccountMessageDto, Long> sms() {
     return accountMessageDto -> {
-      Logger.info("Sending SMS ... " + accountMessageDto.toString());
-      Logger.info("Details ::: " + accountMessageDto.toString());
-      return accountMessageDto.accountNumber();
+        Logger.info("Sending SMS...");
+        Logger.info("Details: {}", accountMessageDto.toString());
+        return accountMessageDto.accountNumber();
     };
   }
 
