@@ -10,14 +10,14 @@ spring:
 
   datasource:
     # For local development:
-    url: jdbc:mysql://localhost:3307/loansdb
-    username: root
-    password: root
-
-    #     For Docker/production:
-    # url: jdbc:mysql://loans-db:3306/loansdb
+    # url: jdbc:mysql://localhost:3307/loansdb
     # username: root
     # password: root
+
+    #     For Docker/production:
+    url: jdbc:mysql://loans-db:3306/loansdb
+    username: root
+    password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       pool-name: CardsHikariPool
@@ -47,14 +47,14 @@ spring:
 
   config:
     # For local dev:
-    import: "configserver:http://localhost:8071"
+    # import: "configserver:http://localhost:8071"
     # For Docker/production:
-    # import: "configserver:http://config-server:8071"
+    import: "configserver:http://config-server:8071"
 
   rabbitmq:
     # For local dev:
-    host: localhost
-    # host: rabbitmq
+    # host: localhost
+    host: rabbitmq
     port: 5672
     username: guest
     password: guest
@@ -83,9 +83,9 @@ eureka:
     registerWithEureka: true
     serviceUrl:
       # For local dev:
-        defaultZone: "http://localhost:8070/eureka"
+        # defaultZone: "http://localhost:8070/eureka"
       # For Docker/production:
-      # defaultZone: "http://eureka-server:8070/eureka"
+      defaultZone: "http://eureka-server:8070/eureka"
 
 info:
   app:
