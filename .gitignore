@@ -19,6 +19,8 @@ accounts/target/
 config-server/target/
 eureka-server/target/
 loans/target/
+gateway-server/target/
+message-queue/target/
 
 # Maven project metadata (Eclipse/IDEA)
 cards/.classpath
@@ -35,7 +37,13 @@ eureka-server/.project
 eureka-server/.settings/
 loans/.classpath
 loans/.project
-loans/.settings/
+loans/.settings
+gateway-server/.classpath
+gateway-server/.project
+gateway-server/.settings
+message-queue/.classpath
+message-queue/.project
+message-queue/.settings
 
 # ====================================
 # Logs and Temporary Files
@@ -84,3 +92,5 @@ docker-compose/*.log
 
 /.idea
 /.vscode
+
+/message-queue/mvnw.cmd
