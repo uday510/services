@@ -10,3 +10,6 @@ docker compose -f accounts-db.yml up -d
 
 
 docker compose -f db.yml up -d
+
+
+docker-compose -f auth-service.yml up -d

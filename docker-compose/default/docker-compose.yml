@@ -40,8 +40,6 @@ services:
     container_name: accounts-service
     platform: linux/arm64
     hostname: accounts-service
-    ports:
-      - "8080:8080"
     depends_on:
       eurekaserver:
         condition: service_healthy
@@ -59,8 +57,6 @@ services:
     image: "uday510/cards:latest"
     container_name: cards-service
     platform: linux/arm64
-    ports:
-      - "9000:9000"
     depends_on:
       eurekaserver:
         condition: service_healthy
@@ -78,8 +74,6 @@ services:
     image: "uday510/loans:latest"
     container_name: loans-service
     platform: linux/arm64
-    ports:
-      - "8090:8090"
     depends_on:
       eurekaserver:
         condition: service_healthy
@@ -106,12 +100,17 @@ services:
         condition: service_healthy
       loans:
         condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: "gateway-server"
+      OTEL_SERVICE_NAME: "gateway-server"
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI: "http://keycloak:8080/realms/master/protocol/openid-connect/certs
     healthcheck:
       test: "curl --fail --silent localhost:8072/actuator/health | grep UP || exit 1"
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 10s
+  
     extends:
       file: common-config.yml
       service: microservice-configservice-config
