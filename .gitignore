@@ -94,3 +94,6 @@ docker-compose/*.log
 /.vscode
 
 /message-queue/mvnw.cmd
+
+/docker-compose/kafka-data
+/docker-compose/kafka-logs

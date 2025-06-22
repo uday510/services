@@ -13,3 +13,7 @@ docker compose -f db.yml up -d
 
 
 docker-compose -f auth-service.yml up -d
+
+docker exec kafka /opt/kafka/bin/kafka-topics.sh \
+  --list \
+  --bootstrap-server localhost:9092
