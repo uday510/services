@@ -10,26 +10,31 @@ import java.util.function.Function;
 @Configuration
 public class MessageFunctions {
 
-  private static final Logger Logger = LoggerFactory.getLogger(MessageFunctions.class);
+  private static final Logger logger = LoggerFactory.getLogger(MessageFunctions.class);
 
   @Bean
   public Function<AccountMessageDto, AccountMessageDto> email() {
     return accountMessageDto -> {
-        Logger.info("Sending Email...");
-        Logger.info("Details ::: {}", accountMessageDto.toString());
-        return accountMessageDto;
+      if (accountMessageDto == null) {
+        logger.warn("Received null AccountMessageDto for email.");
+        return null;
+      }
+      logger.info("Sending Email...");
+      logger.info("Details ::: {}", accountMessageDto);
+      return accountMessageDto;
     };
   }
 
   @Bean
   public Function<AccountMessageDto, Long> sms() {
     return accountMessageDto -> {
-        Logger.info("Sending SMS...");
-        Logger.info("Details: {}", accountMessageDto.toString());
-        return accountMessageDto.accountNumber();
+      if (accountMessageDto == null) {
+        logger.warn("Received null AccountMessageDto for SMS.");
+        return null;
+      }
+      logger.info("Sending SMS...");
+      logger.info("Details: {}", accountMessageDto);
+      return accountMessageDto.accountNumber(); 
     };
   }
-
-
 }
-
