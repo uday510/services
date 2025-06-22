@@ -1,6 +1,6 @@
 server:
   port: 8070
-  shutdown: graceful  # Added graceful shutdown
+  shutdown: graceful
 
 spring:
   application:

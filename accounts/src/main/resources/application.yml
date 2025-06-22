@@ -47,9 +47,9 @@ spring:
 
   config:
     # For local dev:
-    import: "configserver:http://localhost:8071"
+    # import: "configserver:http://localhost:8071"
     # For Docker/production:
-    # import: "configserver:http://config-server:8071"
+    import: "configserver:http://config-server:8071"
 
   rabbitmq:
     # For local dev:
