@@ -23,6 +23,6 @@ docker compose -f db.yml up -d
 docker compose -f rabbitmq.yml up -d
 
 
-docker compose -f keycloak.yml up -d
+docker compose -f auth-server.yml up -d
 
 

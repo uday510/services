@@ -10,14 +10,14 @@ spring:
 
   datasource:
     # For local development:
-    # url: jdbc:mysql://localhost:3308/cardsdb
-    # username: root
-    # password: root
-
-    #     For Docker/production:
-    url: jdbc:mysql://cards-db:3306/cardsdb
+    url: jdbc:mysql://localhost:3308/cardsdb
     username: root
     password: root
+
+    #     For Docker/production:
+    # url: jdbc:mysql://cards-db:3306/cardsdb
+    # username: root
+    # password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       pool-name: CardsHikariPool
@@ -47,14 +47,14 @@ spring:
 
   config:
     # For local dev:
-  #  import: "configserver:http://localhost:8071"
+   import: "configserver:http://localhost:8071"
     # For Docker/production:
-   import: "configserver:http://config-server:8071"
+  #  import: "configserver:http://config-server:8071"
 
   rabbitmq:
     # For local dev:
-    # host: localhost
-    host: rabbitmq
+    host: localhost
+    # host: rabbitmq
     port: 5672
     username: guest
     password: guest

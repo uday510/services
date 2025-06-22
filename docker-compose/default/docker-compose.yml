@@ -1,5 +1,18 @@
 services:
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.7
+    container_name: keycloak
+    ports:
+      - "7080:8080"
+    environment:
+      KEYCLOAK_ADMIN: "admin"
+      KEYCLOAK_ADMIN_PASSWORD: "admin"
+    command: "start-dev"
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
+
   configserver:
     image: "uday510/config-server:latest"
     container_name: config-server
@@ -103,7 +116,7 @@ services:
     environment:
       SPRING_APPLICATION_NAME: "gateway-server"
       OTEL_SERVICE_NAME: "gateway-server"
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI: "http://keycloak:8080/realms/master/protocol/openid-connect/certs
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI: "http://keycloak:8080/realms/master/protocol/openid-connect/certs"
     healthcheck:
       test: "curl --fail --silent localhost:8072/actuator/health | grep UP || exit 1"
       interval: 10s
