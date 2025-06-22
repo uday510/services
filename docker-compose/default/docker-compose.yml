@@ -1,6 +1,21 @@
-version: '3.9'
+version: '3.8'
 
 services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
 
   accounts-db:
     image: mysql
@@ -10,14 +25,15 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: accountsdb
-    extends:
-      file: common-config.yml
-      service: network-deploy-service
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 30s
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
 
   cards-db:
     image: mysql
@@ -27,14 +43,15 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: cardsdb
-    extends:
-      file: common-config.yml
-      service: network-deploy-service
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 30s
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
 
   loans-db:
     image: mysql
@@ -44,29 +61,27 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: loansdb
-    extends:
-      file: common-config.yml
-      service: network-deploy-service
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 30s
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
 
   redis:
     image: redis:latest
     container_name: redis
     ports:
       - "6379:6379"
-    restart: unless-stopped
-    networks:
-      - micro-network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
-      retries: 5
-      start_period: 5s
+      retries: 10
+      start_period: 30s
     extends:
       file: common-config.yml
       service: network-deploy-service
@@ -82,8 +97,8 @@ services:
       KAFKA_NODE_ID: "1"
       KAFKA_PROCESS_ROLES: "controller,broker"
       KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
-      KAFKA_LISTENERS: "PLAINTEXT://:9092,CONTROLLER://:9093"
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9092"
+      KAFKA_LISTENERS: "PLAINTEXT://:9092,PLAINTEXT_HOST://0.0.0.0:29092,CONTROLLER://:9093"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
       KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
       KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
@@ -91,21 +106,14 @@ services:
     volumes:
       - ./kafka-data:/tmp/kraft-combined-logs
     healthcheck:
-      test: ["CMD-SHELL", "kafka-broker-api-versions.sh --bootstrap-server kafka:9092"]
-      interval: 10s
-      timeout: 5s
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 || exit 1"]
+      interval: 15s
+      timeout: 10s
       retries: 10
-      start_period: 30s
-    command: >
-      sh -c "
-      if [ ! -f /tmp/kraft-combined-logs/meta.properties ]; then
-        /opt/kafka/bin/kafka-storage.sh format -t $${KAFKA_CLUSTER_ID} -c /opt/kafka/config/kraft/server.properties;
-      fi &&
-      /opt/kafka/bin/kafka-server-start.sh /opt/kafka/config/kraft/server.properties
-      "
+      start_period: 60s
     extends:
       file: common-config.yml
-      service: network-deploy-servi
+      service: network-deploy-service
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.0.7
@@ -115,29 +123,47 @@ services:
     environment:
       KEYCLOAK_ADMIN: "admin"
       KEYCLOAK_ADMIN_PASSWORD: "admin"
-    command: "start-dev"
+      KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
+      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+      KC_PROXY: "edge"
+    command: 
+      - "start-dev"
+      - "--http-enabled=true"
+      - "--http-port=8080"
+    # healthcheck:
+    #   test: >
+    #     sh -c "curl -sf http://localhost:8080/health/ready | grep -q '\"status\":\"UP\"' || exit 1"
+    #   interval: 10s
+    #   timeout: 10s
+    #   retries: 15
+    #   start_period: 45s
     extends:
       file: common-config.yml
       service: network-deploy-service
 
   configserver:
-    image: "uday510/config-server:latest"
+    image: uday510/config-server:latest
     container_name: config-server
     platform: linux/arm64
     ports:
       - "8071:8071"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     healthcheck:
-      test: "curl --fail --silent localhost:8071/actuator/health/readiness | grep UP || exit 1"
+      test: ["CMD-SHELL", "curl --fail --silent localhost:8071/actuator/health | grep UP || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 10s
+      start_period: 30s
     extends:
       file: common-config.yml
       service: microservice-base-config
 
   eurekaserver:
-    image: "uday510/eureka-server:latest"
+    image: uday510/eureka-server:latest
     container_name: eureka-server
     platform: linux/arm64
     ports:
@@ -146,69 +172,71 @@ services:
       configserver:
         condition: service_healthy
     healthcheck:
-      test: "curl --fail --silent localhost:8070/actuator/health/readiness | grep UP || exit 1"
+      test: ["CMD-SHELL", "curl --fail --silent localhost:8070/actuator/health | grep UP || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 10
-      start_period: 10s
+      retries: 5
+      start_period: 30s
     extends:
       file: common-config.yml
       service: microservice-configservice-config
 
   accounts:
-    image: "uday510/accounts:latest"
+    image: uday510/accounts:latest
     container_name: accounts-service
     platform: linux/arm64
     hostname: accounts-service
     depends_on:
       eurekaserver:
         condition: service_healthy
+      kafka:
+        condition: service_healthy
     healthcheck:
-      test: "curl --fail --silent localhost:8080/actuator/health | grep UP || exit 1"
-      interval: 10s
-      timeout: 5s
+      test: ["CMD-SHELL", "curl --fail --silent localhost:8080/actuator/health | grep UP || exit 1"]
+      interval: 15s
+      timeout: 10s
       retries: 10
-      start_period: 10s
+      start_period: 60s
     extends:
       file: common-config.yml
       service: microservice-configservice-config
 
   cards:
-    image: "uday510/cards:latest"
+    image: uday510/cards:latest
     container_name: cards-service
     platform: linux/arm64
     depends_on:
       eurekaserver:
         condition: service_healthy
     healthcheck:
-      test: "curl --fail --silent localhost:9000/actuator/health | grep UP || exit 1"
+      test: ["CMD-SHELL", "curl --fail --silent localhost:9000/actuator/health | grep UP || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 10s
+      start_period: 30s
     extends:
       file: common-config.yml
       service: microservice-configservice-config
 
   loans:
-    image: "uday510/loans:latest"
+    image: uday510/loans:latest
     container_name: loans-service
     platform: linux/arm64
     depends_on:
       eurekaserver:
         condition: service_healthy
     healthcheck:
-      test: "curl --fail --silent localhost:8090/actuator/health | grep UP || exit 1"
+      test: ["CMD-SHELL", "curl --fail --silent localhost:8090/actuator/health | grep UP || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 10s
+      start_period: 30s
     extends:
       file: common-config.yml
       service: microservice-configservice-config
 
   gatewayserver:
-    image: "uday510/gateway-server:latest"
+    image: uday510/gateway-server:latest
     container_name: gateway-server
     platform: linux/arm64
     ports:
@@ -225,11 +253,11 @@ services:
       OTEL_SERVICE_NAME: "gateway-server"
       SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI: "http://keycloak:8080/realms/master/protocol/openid-connect/certs"
     healthcheck:
-      test: "curl --fail --silent localhost:8072/actuator/health | grep UP || exit 1"
+      test: ["CMD-SHELL", "curl --fail --silent localhost:8072/actuator/health | grep UP || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 10s
+      start_period: 30s
     extends:
       file: common-config.yml
       service: microservice-configservice-config
@@ -237,3 +265,6 @@ services:
 networks:
   micro-network:
     external: true
+
+volumes:
+  kafka-data:

@@ -97,3 +97,6 @@ docker-compose/*.log
 
 /docker-compose/kafka-data
 /docker-compose/kafka-logs
+
+/docker-compose/default/kafka-data
+/docker-compose/default/kafka-logs

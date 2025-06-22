@@ -19,8 +19,9 @@ public class SecurityConfig {
 
   @Bean
   public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-    http.authorizeExchange(exchanges -> exchanges.pathMatchers(HttpMethod.GET, "/app/**")
-        .permitAll().pathMatchers("/app/accounts-service/**").hasRole("ACCOUNTS")
+    http.authorizeExchange(exchanges -> exchanges.pathMatchers("/actuator/**").permitAll()
+        .pathMatchers(HttpMethod.GET, "/app/**").permitAll()
+        .pathMatchers("/app/accounts-service/**").hasRole("ACCOUNTS")
         .pathMatchers("/app/cards-service/**").hasRole("CARDS")
         .pathMatchers("/app/loans-service/**").hasRole("LOANS").anyExchange().authenticated())
         .oauth2ResourceServer(oauth2 -> oauth2
