@@ -23,16 +23,16 @@ spring:
       kafka:
         binder:
           brokers:
-            - localhost:29092
-            # - kafka:9092
+#            - localhost:29092
+             - kafka:9092
           auto-create-topics: true
           configuration:
             default.api.timeout.ms: 120000
             request.timeout.ms: 60000
 
   rabbitmq:
-    host: localhost
-    # host: rabbitmq
+#   host: localhost
+    host: rabbitmq
     port: 5672
     username: guest
     password: guest
