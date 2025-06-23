@@ -20,8 +20,8 @@ docker exec kafka /opt/kafka/bin/kafka-topics.sh \
 
 
 sudo rm -rf ./kafka-data
-mkdir ./kafka-data
-sudo chown -R 1000:1000 ./kafka-data
+
+mkdir ./kafka-data && sudo chmod -R 777 ./kafka-data
 
 docker container prune -f
 

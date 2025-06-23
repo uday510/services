@@ -3,12 +3,15 @@ server:
 
 spring:
   application:
-    name: "message-queue"
+    name: message-queue
+
   cloud:
     function:
       definition: email|sms
+
     stream:
       default-binder: kafka
+
       bindings:
         emailsms-in-0:
           destination: send-communication
@@ -16,14 +19,20 @@ spring:
         emailsms-out-0:
           destination: communication-sent
           group: ${spring.application.name}
+
       kafka:
         binder:
           brokers:
-            # - localhost:9092
-            - kafka:9092
+            - localhost:29092
+            # - kafka:9092
+          auto-create-topics: true
+          configuration:
+            default.api.timeout.ms: 120000
+            request.timeout.ms: 60000
+
   rabbitmq:
-    # host: localhost
-    host: rabbitmq
+    host: localhost
+    # host: rabbitmq
     port: 5672
     username: guest
     password: guest
@@ -31,23 +40,15 @@ spring:
 
 logging:
   level:
-    # Your application's base package - adjust to match your actual package
+    root: INFO
     com.app.accounts: DEBUG
-
-    # HikariCP connection pool
     com.zaxxer.hikari: TRACE
     com.zaxxer.hikari.HikariConfig: DEBUG
-
-    # Spring
     org.springframework.transaction: DEBUG
     org.springframework.jdbc.core.JdbcTemplate: DEBUG
-
     org.springframework.cloud.stream: DEBUG
     org.springframework.amqp.rabbit: DEBUG
     org.springframework.messaging: DEBUG
 
-    # Root logger
-    root: INFO
-
   pattern:
-    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr([%thread]){blue} %clr(%-5level){green} %clr(%logger{36}){cyan} - %clr(%msg){white}%n"     
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr([%thread]){blue} %clr(%-5level){green} %clr(%logger{36}){cyan} - %clr(%msg){white}%n"

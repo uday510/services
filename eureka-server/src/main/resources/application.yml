@@ -8,8 +8,8 @@ spring:
   profiles:
     active: "dev"
   config:
-    # import: "configserver:http://localhost:8071"
-    import: "configserver:http://config-server:8071"
+    import: "configserver:http://localhost:8071"
+    # import: "configserver:http://config-server:8071"
   cloud:
     config:
       fail-fast: false  # Continue if config server is unavailable
@@ -25,10 +25,10 @@ eureka:
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}  # Unique instance ID
     lease-renewal-interval-in-seconds: 5  # Faster renewal in dev
     lease-expiration-duration-in-seconds: 15  # Faster expiration in dev
-    # status-page-url: http://localhost:${server.port}/actuator/info
-    status-page-url: http://configserver:${server.port}/actuator/info
-    # health-check-url: http://localhost:${server.port}/actuator/health
-    health-check-url: http://configserver:${server.port}/actuator/health
+    status-page-url: http://localhost:${server.port}/actuator/info
+    # status-page-url: http://configserver:${server.port}/actuator/info
+    health-check-url: http://localhost:${server.port}/actuator/health
+    # health-check-url: http://configserver:${server.port}/actuator/health
 
   client:
     fetchRegistry: false

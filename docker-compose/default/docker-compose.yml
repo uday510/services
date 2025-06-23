@@ -1,6 +1,5 @@
-version: '3.8'
-
 services:
+
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
@@ -111,6 +110,20 @@ services:
       timeout: 10s
       retries: 10
       start_period: 60s
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
+
+  message-queue:
+    image: "uday510/message-queue:latest"
+    container_name: message-queue
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    # environment:
+    #   SPRING_RABBITMQ_HOST: "rabbitmq"
     extends:
       file: common-config.yml
       service: network-deploy-service
