@@ -13,10 +13,10 @@ public class AccountsFunctions {
   private static final Logger logger = LoggerFactory.getLogger(AccountsFunctions.class);
 
   @Bean
-  public Consumer<Long> updateCommunication(IAccountService accountService) {
-    return accountNumber -> {
-      logger.info("Updating communication status for the account number : {}",
-          accountNumber.toString());
+  public Consumer<String> updateCommunication(IAccountService accountService) {
+    return accountNumberStr -> {
+      Long accountNumber = Long.parseLong(accountNumberStr);
+      logger.info("Updating communication status for account: {}", accountNumber);
       accountService.updateCommunicationStatus(accountNumber);
     };
   }

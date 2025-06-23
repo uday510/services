@@ -51,14 +51,14 @@ spring:
     # For Docker/production:
     import: "configserver:http://config-server:8071"
 
-  rabbitmq:
+  # rabbitmq:
     # For local dev:
     # host: localhost
-    host: rabbitmq
-    port: 5672
-    username: guest
-    password: guest
-    connection-timeout: 10s
+    # host: rabbitmq
+    # port: 5672
+    # username: guest
+    # password: guest
+    # connection-timeout: 10s
   
   cloud:
     openfeign:

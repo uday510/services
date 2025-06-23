@@ -4,6 +4,7 @@ docker-compose -f cards-db.yml up -d
 docker-compose -f rabbitmq.yml up -d
 
 
+docker network create micro-network
 
 docker network inspect micro-network
 
@@ -61,3 +62,9 @@ docker exec kafka /opt/kafka/bin/kafka-topics.sh \
 
 
   docker compose -f apache-kafka.yml down
+
+
+rm -rf ./kafka-data && mkdir ./kafka-data && chmod 700 ./kafka-data
+
+
+docker compose up --force-recreate
