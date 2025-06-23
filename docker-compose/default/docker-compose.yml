@@ -111,6 +111,9 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: "1"
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: "1"
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: "1"
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
 
     volumes:
       - ./kafka-data:/tmp/kraft-combined-logs
@@ -131,6 +134,9 @@ services:
       KAFKA_CLUSTERS_0_NAME: "local"
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: "kafka:9092"
       KAFKA_CLUSTERS_0_ZOOKEEPER: ""
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
     depends_on:
       - kafka
 
