@@ -26,3 +26,8 @@ mkdir ./kafka-data && sudo chmod -R 777 ./kafka-data
 docker container prune -f
 
 docker compose up -d --force-recreate
+
+
+for dir in accounts cards config-server eureka-server gateway-server loans message-queue; do echo "📦 Building $dir..."; (cd $dir && mvn compile jib:dockerBuild); done
+
+docker images --format '{{.Repository}}:{{.Tag}}' | grep '^uday510/' | xargs -n1 docker push
