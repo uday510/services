@@ -90,7 +90,7 @@
                         <image>eclipse-temurin@sha256:5fdd5f11eb03c9c4474de0383d883fc8f1b2dd67f4440f39f7a2595f443569ef</image>
                         <platforms>
                             <platform>
-                                <architecture>arm64</architecture>
+                                <architecture>amd64</architecture>
                                 <os>linux</os>
                             </platform>
                         </platforms>
